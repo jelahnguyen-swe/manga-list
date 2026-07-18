@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Vault - Thư Viện Truyện Tranh</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <meta name="description" content="Danh sách quản lý và tìm kiếm truyện tranh manga chuyên nghiệp">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@300;400;600;800&family=Noto+Sans+JP:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #0b0c12;
+            --surface-color: #161824;
+            --accent-red: #ff3e3e;
+            --accent-yellow: #f5b041;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a5bd;
+            --neon-glow: 0 0 20px rgba(255, 62, 62, 0.8);
+            --manga-border: 4px solid #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image:
+                /* Manga action speed background line elements */
+                repeating-linear-gradient(45deg, rgba(255, 62, 62, 0.005) 0px, rgba(255, 62, 62, 0.005) 2px, transparent 2px, transparent 10px),
+                /* Classic halftone dot pattern */
+                radial-gradient(rgba(255, 255, 255, 0.035) 15%, transparent 16%),
+                radial-gradient(rgba(255, 255, 255, 0.035) 15%, transparent 16%);
+            background-size: 80px 80px, 20px 20px, 20px 20px;
+            background-position: 0 0, 0 0, 10px 10px;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            padding-bottom: 50px;
+            position: relative;
+        }
+
+        /* Floating Anime SFX Katakana with smooth floating drift animation */
+        .sfx-bg {
+            position: fixed;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-weight: 900;
+            color: rgba(255, 62, 62, 0.03);
+            font-size: 8rem;
+            user-select: none;
+            pointer-events: none;
+            z-index: -1;
+            white-space: nowrap;
+            text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes floatSFX1 {
+            0% {
+                transform: translateY(0px) rotate(-15deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(-12deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(-15deg);
+            }
+        }
+
+        @keyframes floatSFX2 {
+            0% {
+                transform: translateY(0px) rotate(15deg);
+            }
+
+            50% {
+                transform: translateY(20px) rotate(18deg);
+            }
+
+            100% {
+                transform: translateY(0px) rotate(15deg);
+            }
+        }
+
+        .sfx-gogo {
+            top: 15%;
+            left: -2%;
+            animation: floatSFX1 8s infinite ease-in-out;
+        }
+
+        .sfx-dodo {
+            bottom: 20%;
+            right: -2%;
+            animation: floatSFX2 9s infinite ease-in-out;
+            color: rgba(245, 176, 65, 0.03);
+        }
+
+        .sfx-shaa {
+            top: 55%;
+            left: 82%;
+            font-size: 6rem;
+            animation: floatSFX1 7s infinite ease-in-out;
+        }
+
+        .sfx-baaan {
+            bottom: 45%;
+            left: 4%;
+            font-size: 7rem;
+            animation: floatSFX2 10s infinite ease-in-out;
+        }
+
+        /* Falling Shuriken (Phi tiêu) Particle System Style - CLEARER AND MORE VISIBLE */
+        #shuriken-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            /* Behind main layout but above background patterns */
+            overflow: hidden;
+        }
+
+        .shuriken-particle {
+            position: absolute;
+            top: -60px;
+            pointer-events: none;
+            user-select: none;
+            animation: shurikenFall linear infinite;
+        }
+
+        @keyframes shurikenFall {
+            0% {
+                transform: translateY(-60px) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(105vh) rotate(1800deg);
+                opacity: 0;
+            }
+        }
+
+        header {
+            position: relative;
+            background: linear-gradient(135deg, #07080c, #11131c);
+            border-bottom: 6px solid var(--accent-red);
+            padding: 55px 20px;
+            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            z-index: 2;
+        }
+
+        /* Anime Speed Lines in Header Background */
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-conic-gradient(from 0deg at 50% 50%, rgba(255, 62, 62, 0.07) 0deg 1.5deg, transparent 1.5deg 4deg),
+                radial-gradient(circle at 50% 50%, transparent 35%, rgba(7, 8, 12, 0.9) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .logo-container {
+            position: relative;
+            z-index: 2;
+            display: inline-block;
+            transform: rotate(-1.5deg);
+            margin-bottom: 15px;
+            animation: titlePulse 2s infinite alternate ease-in-out;
+        }
+
+        @keyframes titlePulse {
+            0% {
+                transform: rotate(-1.5deg) scale(1);
+            }
+
+            100% {
+                transform: rotate(-2deg) scale(1.03);
+            }
+        }
+
+        h1 {
+            font-family: 'Bangers', cursive;
+            font-size: 5.5rem;
+            color: #fff;
+            text-shadow:
+                4px 4px 0 #000,
+                -4px -4px 0 #000,
+                4px -4px 0 #000,
+                -4px 4px 0 #000,
+                0px 8px 0 var(--accent-red),
+                0 0 30px rgba(255, 62, 62, 0.7);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-yellow);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 800;
+            z-index: 2;
+            position: relative;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        /* Hero Carousel Section */
+        .hero-section {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .carousel {
+            position: relative;
+            height: 380px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: var(--manga-border);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 40px 80px;
+            /* Parallax zoom effect for slide background */
+            animation: zoomEffect 20s infinite alternate linear;
+        }
+
+        @keyframes zoomEffect {
+            0% {
+                background-size: 100% auto;
+            }
+
+            100% {
+                background-size: 110% auto;
+            }
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+
+        /* Anime action speed lines shooting out from the book cover */
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 80% 50%, rgba(11, 12, 16, 0.1) 10%, rgba(11, 12, 16, 0.95) 75%),
+                repeating-conic-gradient(from 0deg at 80% 50%, rgba(255, 62, 62, 0.05) 0deg 1deg, transparent 1deg 3deg);
+            z-index: 1;
+        }
+
+        .slide-content-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 3;
+            position: relative;
+        }
+
+        .slide-content {
+            max-width: 550px;
+        }
+
+        .slide-cover-container {
+            width: 180px;
+            height: 260px;
+            border: 4px solid #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 255, 255, 0.35);
+            transform: rotate(3deg) scale(1.05);
+            transition: transform 0.5s ease;
+            background-color: #222;
+        }
+
+        .slide.active .slide-cover-container {
+            transform: rotate(5deg) translateY(-10px) scale(1.1);
+        }
+
+        .slide-cover-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-badge {
+            display: inline-block;
+            background-color: var(--accent-red);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            transform: skew(-10deg);
+            border: 2px solid #000;
+            margin-bottom: 12px;
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        .slide-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 12px;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        .slide-desc {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 3px solid #fff;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-btn:hover {
+            background-color: var(--accent-red);
+            border-color: #000;
+            transform: translateY(-50%) scale(1.15) rotate(5deg);
+            box-shadow: var(--neon-glow);
+        }
+
+        .carousel-prev {
+            left: 20px;
+        }
+
+        .carousel-next {
+            right: 20px;
+        }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 25px;
+            left: 80px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            border: 1px solid #000;
+        }
+
+        .dot.active {
+            background-color: var(--accent-red);
+            transform: scale(1.3);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Search and Filter Section */
+        .search-section {
+            background-color: var(--surface-color);
+            border: var(--manga-border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 8px 8px 0 #000;
+            position: relative;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px;
+            padding-right: 50px;
+            font-size: 1.1rem;
+            background-color: #0b0c10;
+            border: 3px solid #000;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 4px 4px 0 #000;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-red);
+            box-shadow: var(--neon-glow), 4px 4px 0 #000;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-red);
+            font-size: 1.3rem;
+            pointer-events: none;
+        }
+
+        .stats-badge {
+            background-color: #000;
+            border: 3px solid var(--accent-yellow);
+            color: var(--accent-yellow);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.4);
+            white-space: nowrap;
+        }
+
+        /* Alphabet Quick Navigation */
+        .alphabet-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .letter-btn {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #111;
+            border: 2px solid #000;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .letter-btn:hover,
+        .letter-btn.active {
+            background-color: var(--accent-red);
+            color: white;
+            border-color: #000;
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        /* Manga Grid Layout - RESPONSIVE CODES */
+        .manga-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            /* Mobile: 2 items per row */
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 600px) {
+            .manga-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .manga-grid {
+                grid-template-columns: repeat(6, minmax(0, 1fr));
+                /* Desktop: 5 items per row */
+                gap: 25px;
+            }
+        }
+
+        /* Manga Card - COMPACT DESIGN */
+        .manga-card {
+            background-color: var(--surface-color);
+            border: var(--manga-border);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 6px 6px 0 #000;
+            position: relative;
+        }
+
+        .manga-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 10px 10px 0 var(--accent-red);
+            border-color: #000;
+        }
+
+        .card-header {
+            position: relative;
+            height: 220px;
+            background-color: #0f1015;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Full cover image styling for responsive cover */
+        .card-cover-full {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .manga-card:hover .card-cover-full {
+            transform: scale(1.08);
+        }
+
+        /* Generic cover card placeholder style */
+        .generic-cover {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-red), var(--accent-yellow));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-family: 'Bangers', cursive;
+            font-size: 2.2rem;
+            text-shadow: 1.5px 1.5px 0 #fff;
+            z-index: 1;
+        }
+
+        .id-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background-color: var(--accent-yellow);
+            color: #000;
+            font-weight: 800;
+            padding: 3px 6px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            border: 2px solid #000;
+            z-index: 3;
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        /* HOT Tag in TOP-RIGHT corner of the card */
+        .featured-tag {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: var(--accent-red);
+            color: white;
+            font-weight: 900;
+            font-size: 0.7rem;
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 2px solid #000;
+            box-shadow: 2px 2px 0 #000;
+            text-transform: uppercase;
+            z-index: 3;
+            letter-spacing: 0.5px;
+            transform: rotate(3deg);
+        }
+
+        /* COMPACT CARD TITLE BOX: Footer completely removed to eliminate empty space */
+        .card-title-box {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 12px 10px 12px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            background: linear-gradient(to top, rgba(11, 12, 18, 0.98) 0%, rgba(11, 12, 18, 0.75) 60%, rgba(11, 12, 18, 0) 100%);
+            z-index: 2;
+            border-top: none;
+        }
+
+        .manga-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #fff;
+            text-align: center;
+            word-wrap: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            width: 100%;
+            height: 2.6em;
+            text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.95);
+            margin: 0;
+            transition: color 0.2s;
+        }
+
+        .manga-card:hover .manga-title {
+            color: var(--accent-yellow);
+        }
+
+        /* Smart Pagination Panel with speech bubble statistics */
+        .pagination-container {
+            background-color: var(--surface-color);
+            border: var(--manga-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 40px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 6px 6px 0 #000;
+        }
+
+        .pagination-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            padding-bottom: 12px;
+            border-bottom: 2px dashed rgba(255, 255, 255, 0.08);
+        }
+
+        .page-size-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-size-select {
+            background-color: #0b0c10;
+            border: 2px solid #000;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .page-size-select:focus {
+            border-color: var(--accent-red);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            background-color: #0b0c10;
+            color: var(--text-primary);
+            border: 2px solid #000;
+            padding: 8px 14px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0 #000;
+            transition: all 0.2s;
+        }
+
+        .page-btn:hover {
+            background-color: var(--accent-yellow);
+            color: #000;
+            transform: translateY(-2px) rotate(-2deg);
+        }
+
+        .page-btn.active {
+            background-color: var(--accent-red);
+            color: white;
+            box-shadow: 1px 1px 0 #000;
+            transform: translate(1px, 1px);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 2px 2px 0 #000;
+        }
+
+        .page-ellipsis {
+            font-weight: bold;
+            color: var(--text-secondary);
+            padding: 0 4px;
+        }
+
+        /* No Results speech bubble state */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .bubble-container {
+            display: inline-block;
+            position: relative;
+            background: #fff;
+            color: #000;
+            border: 4px solid #000;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 400px;
+            box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5);
+            font-weight: 800;
+            font-size: 1.25rem;
+            margin-bottom: 25px;
+        }
+
+        .bubble-container::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 20px 20px 0;
+            border-style: solid;
+            border-color: #fff transparent;
+            display: block;
+            width: 0;
+            z-index: 1;
+        }
+
+        .bubble-container::before {
+            content: '';
+            position: absolute;
+            bottom: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 23px 23px 0;
+            border-style: solid;
+            border-color: #000 transparent;
+            display: block;
+            width: 0;
+            z-index: 0;
+        }
+
+        .no-results-img {
+            width: 300px;
+            height: 300px;
+            margin: 15px auto 0 auto;
+            display: block;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+        }
+
+        /* Floating Actions */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent-red);
+            color: white;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #000;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background-color: var(--accent-yellow);
+            color: #000;
+            transform: translateY(-5px);
+        }
+
+        /* Responsive Design adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            .carousel {
+                height: 320px;
+            }
+
+            .slide {
+                padding: 20px 30px;
+            }
+
+            .slide-title {
+                font-size: 1.6rem;
+                text-shadow: 2px 2px 0 #000;
+            }
+
+            .slide-cover-container {
+                width: 100px;
+                height: 150px;
+            }
+
+            .slide-desc {
+                font-size: 0.95rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .search-section {
+                padding: 20px;
+            }
+
+            .carousel-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            .carousel-prev {
+                left: 10px;
+            }
+
+            .carousel-next {
+                right: 10px;
+            }
+        }
+
+        .manga-decoration {
+            position: absolute;
+            background-color: #fff;
+            color: #000;
+            border: 3px solid #000;
+            font-family: 'Bangers', cursive;
+            padding: 8px 16px;
+            font-size: 1.4rem;
+            z-index: 5;
+            box-shadow: 4px 4px 0 #000;
+            letter-spacing: 1px;
+        }
+
+        .deco-boom {
+            top: 20px;
+            left: 20px;
+            transform: rotate(-15deg);
+            background-color: var(--accent-yellow);
+        }
+
+        .deco-pow {
+            bottom: 20px;
+            right: 20px;
+            transform: rotate(10deg);
+            background-color: var(--accent-red);
+            color: #fff;
+        }
+
+        .letter-btn.nostal-btn {
+            width: auto;
+            white-space: nowrap;
+            background: linear-gradient(135deg, #ff3e3e, #f5b041);
+            color: white;
+            font-weight: 800;
+            border: 2px solid #000;
+            padding: 5px 15px;
+            box-shadow: 2px 2px 0 #000;
+            text-transform: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 6px;
+        }
+        .letter-btn.nostal-btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0 #000;
+            background: linear-gradient(135deg, #f5b041, #ff3e3e);
+        }
+        .letter-btn.nostal-btn.active {
+            background: #fff;
+            color: #000;
+            border-color: #ff3e3e;
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Falling Shurikens Background Container -->
+    <div id="shuriken-container"></div>
+
+    <!-- Background Anime Sounds (Decoration) -->
+    <div class="sfx-bg sfx-gogo">ゴゴゴゴ</div>
+    <div class="sfx-bg sfx-dodo">ドドドド</div>
+    <div class="sfx-bg sfx-shaa">シャァァ</div>
+    <div class="sfx-bg sfx-baaan">バァァン</div>
+
+    <header>
+        <span class="manga-decoration deco-boom">BOOM!</span>
+        <div class="logo-container">
+            <h1>MANGA VAULT</h1>
+        </div>
+        <div class="subtitle">Chứa đựng cả tuổi thơ</div>
+        <span class="manga-decoration deco-pow">POW!</span>
+    </header>
+
+    <!-- Featured Slideshow Section -->
+    <section class="hero-section">
+        <div class="carousel" id="carousel">
+            <!-- Slides will be injected dynamically -->
+            <button class="carousel-btn carousel-prev" id="prevSlide">&lt;</button>
+            <button class="carousel-btn carousel-next" id="nextSlide">&gt;</button>
+            <div class="carousel-dots" id="carouselDots"></div>
+        </div>
+    </section>
+
+    <!-- Main Content Section -->
+    <main class="container">
+        <!-- Search and Statistics -->
+        <section class="search-section">
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Bạn muốn đọc gì nhỉ...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <div class="stats-badge" id="statsBadge">
+                    Đang hiển thị: 0 / 0 bộ
+                </div>
+            </div>
+
+            <!-- Alphabet Quick Links -->
+            <div class="alphabet-nav" id="alphabetNav">
+                <button class="letter-btn active" data-letter="all">ALL</button>
+                <button class="letter-btn nostal-btn" data-letter="nostalgia">❤️ Gây Thương Nhớ</button>
+                <!-- A-Z letters will be generated dynamically -->
+            </div>
+        </section>
+
+        <!-- Manga Grid -->
+        <section class="manga-grid" id="mangaGrid">
+            <!-- Cards will be injected dynamically by JavaScript -->
+        </section>
+
+        <!-- Smart Pagination Panel -->
+        <section class="pagination-container" id="paginationContainer">
+            <div class="pagination-header">
+                <div id="paginationInfo">Hiển thị từ 1 đến 30 trong tổng số 0 bộ truyện</div>
+                <div class="page-size-selector">
+                    <span>Số truyện mỗi trang:</span>
+                    <select class="page-size-select" id="pageSizeSelect">
+                        <option value="18">18</option>
+                        <option value="36" selected>36</option>
+                        <option value="72">72</option>
+                        <option value="108">108</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pagination" id="pagination">
+                <!-- Page numbers generated dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Back to Top Button -->
+    <button class="back-to-top" id="backToTop" title="Lên đầu trang">▲</button>
+
+    <script>
+        // Data injected from Python
+        const mangaData = [{ "id": "001", "name": "+Anima" }, { "id": "002", "name": "07 Ghost" }, { "id": "003", "name": "1/2 Ranma" }, { "id": "004", "name": "100 Ngày Nữa Con Cá Sấu Này Sẽ Chết" }, { "id": "005", "name": "20th Century Boys" }, { "id": "006", "name": "21st Century Boys" }, { "id": "007", "name": "5 Centimet Per Second" }, { "id": "008", "name": "6 Lá Thư Doremon" }, { "id": "009", "name": "7 Seed" }, { "id": "010", "name": "A CRUEL GOD REIGNS" }, { "id": "011", "name": "A Girls" }, { "id": "012", "name": "A Silent Voice - Dáng Hình Thanh Âm" }, { "id": "013", "name": "A-Bout!" }, { "id": "014", "name": "ACCA Cục Thanh Tra 13 Bang" }, { "id": "015", "name": "Ace of Hearts" }, { "id": "016", "name": "Adabana" }, { "id": "017", "name": "Adachi Mitsuru - Cross Game" }, { "id": "018", "name": "Adachi Mitsuru - H2" }, { "id": "019", "name": "Adachi Mitsuru - Hoa Nắng" }, { "id": "020", "name": "Adachi Mitsuru - Itsumo Misora" }, { "id": "021", "name": "Adachi Mitsuru - Katsu!" }, { "id": "022", "name": "Adachi Mitsuru - Miyuki" }, { "id": "023", "name": "Adachi Mitsuru - Q&A" }, { "id": "024", "name": "Adachi Mitsuru - Rough Ngọc Thô" }, { "id": "025", "name": "Adachi Mitsuru - Slow Step" }, { "id": "026", "name": "Adachi Mitsuru - Touch" }, { "id": "027", "name": "Adachi Mitsuru - Tuyển Tập Truyện Ngắn" }, { "id": "028", "name": "Aekaneru" }, { "id": "029", "name": "Againt!!" }, { "id": "030", "name": "Agravity Boys" }, { "id": "031", "name": "Ai Kora - Mảnh Ghép" }, { "id": "032", "name": "Aiki" }, { "id": "033", "name": "Air Gear" }, { "id": "034", "name": "Akumetsu" }, { "id": "035", "name": "Alice In Borderland" }, { "id": "036", "name": "ALICE IN HELL – HÀNH TRÌNH ĐIÊN GIỮA ĐỊA NGỤC SA MẠC" }, { "id": "037", "name": "Alice On Border Road" }, { "id": "038", "name": "Alive - The Final Evolution" }, { "id": "039", "name": "All New Ghost Rider" }, { "id": "040", "name": "All You Need Is Kill" }, { "id": "041", "name": "Angel Beat" }, { "id": "042", "name": "Angel Densetsu" }, { "id": "043", "name": "Angel Sanctuary - Lãnh Địa Thiên Thần" }, { "id": "044", "name": "Anh Chàng Bảo Mẫu" }, { "id": "045", "name": "Anh Hùng Chết Yểu" }, { "id": "046", "name": "Anh Hùng Vô Lệ" }, { "id": "047", "name": "Anh Hùng Xạ Điêu Full Màu" }, { "id": "048", "name": "Aposimz" }, { "id": "049", "name": "Area D" }, { "id": "050", "name": "Ares Kiếm Sĩ Lang Thang" }, { "id": "051", "name": "Aria" }, { "id": "052", "name": "As The Gods Will - Mệnh Lệnh Của Thần Phần 01" }, { "id": "053", "name": "As The Gods Will - Mệnh Lệnh Của Thần Phần 02" }, { "id": "054", "name": "Asari - Cô Bé Tinh Nghịch" }, { "id": "055", "name": "Attack on Titan - No Regrets" }, { "id": "056", "name": "Ác Ma Của Chiến Thắng" }, { "id": "057", "name": "Ám Hành Ngự Sử" }, { "id": "058", "name": "Ánh Trăng Bí Ẩn" }, { "id": "059", "name": "Áo Giáp Vàng - Phiên Bản Kanzenban" }, { "id": "060", "name": "Áo Giáp Vàng Perfect Edition" }, { "id": "061", "name": "Âm Dương Lộ" }, { "id": "062", "name": "Ẩn Thánh Malanhi" }, { "id": "063", "name": "Baby Love" }, { "id": "064", "name": "Bakegamon" }, { "id": "065", "name": "BAKETERIYA" }, { "id": "066", "name": "Baki Son Of Ogre" }, { "id": "067", "name": "Bakudan" }, { "id": "068", "name": "Bakuman" }, { "id": "069", "name": "BALANCE POLICY" }, { "id": "070", "name": "Bamboo Samurai" }, { "id": "071", "name": "Baptist Người Rửa Tội" }, { "id": "072", "name": "Bartender" }, { "id": "073", "name": "Basara" }, { "id": "074", "name": "Batman - The New 52" }, { "id": "075", "name": "Batman : Three Jokers" }, { "id": "076", "name": "Battle Angel Alita" }, { "id": "077", "name": "BATTLE ANGEL ALITA: LAST ORDER" }, { "id": "078", "name": "Battle Royale - Trò Chơi Sinh Tử" }, { "id": "079", "name": "Bá Đao" }, { "id": "080", "name": "Bá Tước Tiểu Thư" }, { "id": "081", "name": "Bác Sĩ Jin" }, { "id": "082", "name": "Bác Sĩ Kazu" }, { "id": "083", "name": "Bác Sĩ Ma Giới" }, { "id": "084", "name": "Bách Quỷ Dạ Hành" }, { "id": "085", "name": "Báu Vật Hoàng Cung" }, { "id": "086", "name": "Bắc Đẩu Du Hiệp" }, { "id": "087", "name": "Bắc Đẩu Thần Quyền" }, { "id": "088", "name": "Bắc Kiếm Giang Hồ" }, { "id": "089", "name": "Bạch Tuyết Tóc Đỏ" }, { "id": "090", "name": "Bạn Gái Chung Nhà" }, { "id": "091", "name": "Bạn Gái Tôi Không Chỉ Dễ Thương" }, { "id": "092", "name": "Bậc Thầy Ma Pháp" }, { "id": "093", "name": "Beelzebub - Vua Quỷ" }, { "id": "094", "name": "Berserk" }, { "id": "095", "name": "Beyblade - Con Quay Truyền Thuyết" }, {"id": "096", "name": "Nhóc Miko"}, { "id": "097", "name": "BEYOND EVIL – TRỢ LÝ CỦA QUỶ" }, { "id": "098", "name": "Bên Bếp Lửa Nhà Alice San" }, { "id": "099", "name": "BIBLIOMANIA" }, { "id": "100", "name": "Biên Hoang Truyền Thuyết" }, { "id": "101", "name": "Billy Bat - Naoki Urasawa" }, { "id": "102", "name": "Bio Meat" }, { "id": "103", "name": "Birthright" }, { "id": "104", "name": "Black Cat" }, { "id": "105", "name": "Black Jack Đại Tuyển Tập (Color)" }, { "id": "106", "name": "Blame!" }, { "id": "107", "name": "Bleach" }, { "id": "108", "name": "Bloody Monday P1" }, { "id": "109", "name": "Bloody Monday P2" }, { "id": "110", "name": "Bloody Monday P3" }, { "id": "111", "name": "Blue Box" }, { "id": "112", "name": "Blue Lock" }, { "id": "113", "name": "Blues" }, { "id": "114", "name": "Boku Girls" }, { "id": "115", "name": "Bokura Wa Minna Kawaisou - Ký Túc Xá Dễ Thương" }, { "id": "116", "name": "Boruto - Thế Hệ Tiếp Theo Naruto" }, { "id": "117", "name": "Boruto Phần 1" }, { "id": "118", "name": "Boxing Đường Tới Võ Đài" }, { "id": "119", "name": "Boys On The Run" }, { "id": "120", "name": "Btooom! Cuộc Chiến Sinh Tồn" }, { "id": "121", "name": "Bullet Armors" }, { "id": "122", "name": "Cage Of Eden" }, { "id": "123", "name": "Candy Cô Bé Mồ Côi" }, { "id": "124", "name": "Captain Kid - Hoàng Tử Hải Tặc" }, { "id": "125", "name": "Captain Tsubasa - Giấc Mơ Sân Cỏ" }, { "id": "126", "name": "Captain Tsubasa - Golden 23" }, { "id": "127", "name": "Captain Tsubasa - Rising Sun" }, { "id": "128", "name": "Captain Tsubasa - Road To 2002" }, { "id": "129", "name": "Captain Tsubasa - Trận Chiến EN La Liga" }, { "id": "130", "name": "Captain Tsubasa - Trận Chiến Liên Đoàn Italy" }, { "id": "131", "name": "Captain Tsubasa - World Youth" }, { "id": "132", "name": "Casino Gui" }, { "id": "133", "name": "Cánh Cụt Ginji" }, { "id": "134", "name": "Cây Bút Thần Kỳ" }, { "id": "135", "name": "Cây Đàn Kỳ Diệu" }, { "id": "136", "name": "Cậu Bé Ba Mắt" }, { "id": "137", "name": "Cậu Bé Đế Vương" }, { "id": "138", "name": "Cậu Bé Giáp Sắt" }, { "id": "139", "name": "Cậu Bé Giỏi Võ Tacaza" }, { "id": "140", "name": "Cậu Bé Mặt Trời" }, { "id": "141", "name": "Cậu Bé Thần Giáo" }, { "id": "142", "name": "Cặp Bài Trùng" }, { "id": "143", "name": "CENTURIA" }, { "id": "144", "name": "Change 123 - Cô Gái Bị Bệnh Đa Nhân Cách" }, { "id": "145", "name": "Change Guy" }, { "id": "146", "name": "Change The World" }, { "id": "147", "name": "Chân Dung M và N" }, { "id": "148", "name": "Chân Mệnh Thiên Tử (Bản Full)" }, { "id": "149", "name": "Chie - Cô Bé Hạt Tiêu" }, { "id": "150", "name": "Chiếc Nhẫn Ngọc Hoàng" }, { "id": "151", "name": "Chiến Phố" }, { "id": "152", "name": "Chiến Quốc Yêu Hồ" }, { "id": "153", "name": "Chiến Sĩ Giấy P1" }, { "id": "154", "name": "Chiến Sĩ Giấy P2" }, { "id": "155", "name": "Chiến Thần Ký" }, { "id": "156", "name": "Children Of The Sea" }, { "id": "157", "name": "Chobits" }, { "id": "158", "name": "Chú Bé Quyền Năng" }, { "id": "159", "name": "Chú Bé Rồng Phần 1" }, { "id": "160", "name": "Chú Bé Rồng Phần 2" }, { "id": "161", "name": "Chú Bé Rồng Phần 3" }, { "id": "162", "name": "Chú Chó Gác Sao" }, { "id": "163", "name": "Chú Thoòng" }, { "id": "164", "name": "Chú Thuật Hồi Chiến - Jujutsu Kaisen" }, { "id": "165", "name": "Chúc Ngủ Ngon Punpun" }, { "id": "166", "name": "Chúng Ta Không Thể Học" }, { "id": "167", "name": "Cigarette and Cherry" }, { "id": "168", "name": "Citrus" }, { "id": "169", "name": "Clover" }, { "id": "170", "name": "Code Breaker" }, { "id": "171", "name": "Con Diệc Đen P1" }, { "id": "172", "name": "Con Diệc Đen P2" }, { "id": "173", "name": "Con Diệc Đen P3" }, { "id": "174", "name": "Con Gái Con Trai" }, { "id": "175", "name": "Con Quay Siêu Tốc" }, { "id": "176", "name": "Conan Đặc Biệt" }, { "id": "177", "name": "Có Vẻ Nhóm Mạo Hiểm Giả Không Tin Vào Nhân Loại Sẽ Giải Cứu Thế Giới" }, { "id": "178", "name": "Cô Nàng Ngổ Ngáo" }, { "id": "179", "name": "Cô Phụ Tù" }, { "id": "180", "name": "Công Lý Và Giang Hồ" }, { "id": "181", "name": "Công Viên Khủng Long" }, { "id": "182", "name": "Cổ Long Quần Hiệp Truyện" }, { "id": "183", "name": "Cơn Lốc Akatsuki" }, { "id": "184", "name": "Cơn Lốc Sân Cỏ (Đường Dẫn Đến Khung Thành Bộ 4 Xưa)" }, { "id": "185", "name": "Cross Account" }, { "id": "186", "name": "Crows" }, { "id": "187", "name": "Crows Zero" }, { "id": "188", "name": "Crows Zero P2" }, { "id": "189", "name": "Crows Zero Reboot" }, { "id": "190", "name": "Cuốn Sổ Tử Thần Full Màu" }, { "id": "191", "name": "Cuốn Từ Điển Kỳ Bí" }, { "id": "192", "name": "Cuộc Chiến Ẩm Thực - Food Wars" }, { "id": "193", "name": "Cuộc Phiêu Lưu Của Croket" }, { "id": "194", "name": "Cuộc Phiêu Lưu Của Củ Hành" }, { "id": "195", "name": "Cuộc Phiêu Lưu Của Tintin" }, { "id": "196", "name": "Cuộc Sống Tí Hon Trong Rừng Sâu" }, { "id": "197", "name": "Cửu Long Thành Trại Phần 1" }, { "id": "198", "name": "Cửu Long Thành Trại Phần 2" }, { "id": "199", "name": "CỰU TÁC LONG HỔ MÔN - ĐÔNG PHƯƠNG CHÂN LONG" }, { "id": "200", "name": "Dad, The Beard Gorilla And I" }, { "id": "201", "name": "Dagashi Kashi" }, { "id": "202", "name": "Dan Doh! Phần 1" }, { "id": "203", "name": "Dan Doh!! Next Generation" }, { "id": "204", "name": "Danchigai" }, { "id": "205", "name": "Dandoh! XI" }, { "id": "206", "name": "Danh Nhân Thế Giới" }, { "id": "207", "name": "Darwin Game" }, { "id": "208", "name": "Dấu Ấn Rồng Thiêng 1 Tiền Truyện - Dũng Giả Avan" }, { "id": "209", "name": "Dấu Ấn Rồng Thiêng 1 Version 1996" }, { "id": "210", "name": "DCeased (2019)" }, { "id": "211", "name": "DCeased Dead Planet Phần 2" }, { "id": "212", "name": "DCeased Hope At World's End (Ngoại Truyện)" }, { "id": "213", "name": "Dead Tube" }, { "id": "214", "name": "DEADMAN WONDERLAND" }, { "id": "215", "name": "Death Note - Cuốn Sổ Tử Thần" }, { "id": "216", "name": "Deathtopia" }, { "id": "217", "name": "Densha Otoko" }, { "id": "218", "name": "Diêm Đế" }, { "id": "219", "name": "Diệp Vấn Tiền Truyện" }, { "id": "220", "name": "Dị Nhân Quán" }, { "id": "221", "name": "Dịch Vụ Trả Thù Phần 1" }, { "id": "222", "name": "Dịch Vụ Trả Thù Phần 2" }, { "id": "223", "name": "Dogashikaden!" }, { "id": "224", "name": "Dokuni Cooking" }, { "id": "225", "name": "Dolly Kill Kill" }, { "id": "226", "name": "Donald Và Bạn Hữu" }, { "id": "227", "name": "Dong Binh Thiên Hạ" }, { "id": "228", "name": "Dora Q" }, { "id": "229", "name": "Doremon Bóng Chày" }, { "id": "230", "name": "Doremon Đại Tuyển Tập Ngắn" }, { "id": "231", "name": "Doremon Plus" }, { "id": "232", "name": "Doremon Thêm - Bản Đẹp" }, { "id": "233", "name": "Doremon Truyện Dài" }, { "id": "234", "name": "Doremon Truyện Ngắn Version 1992" }, { "id": "235", "name": "Dorohedoro" }, { "id": "236", "name": "Doubt" }, { "id": "237", "name": "Dòng Sông Huyền Bí" }, { "id": "238", "name": "Dr Stone" }, { "id": "239", "name": "Dr. Slump" }, { "id": "240", "name": "Dragon Ball AF (Ngoại Truyện)" }, { "id": "241", "name": "Dragon Ball Kakumei" }, { "id": "242", "name": "Dragon Ball Ngoại Truyện" }, { "id": "243", "name": "Dragon Ball Super - Full Màu" }, { "id": "244", "name": "Dragon Ball Version 1995" }, { "id": "245", "name": "Dragon Drive" }, { "id": "246", "name": "Dragon Head" }, { "id": "247", "name": "Drawing Saikyou Mangaka Wa Oekaki Skill De Isekai Musou Suru!" }, { "id": "248", "name": "Duel Master" }, { "id": "249", "name": "Dungeon Seeker" }, { "id": "250", "name": "Dũng Sĩ Hesman 4K" }, { "id": "251", "name": "Dự Án Kéo Vàng" }, { "id": "252", "name": "Đầu Bếp Siêu Đẳng" }, { "id": "253", "name": "Đấu Gấu Và Mắt Cận" }, { "id": "254", "name": "Đấu Trường Rực Lửa" }, { "id": "255", "name": "Đảo Ma Cà Rồng P3" }, { "id": "256", "name": "Đảo Ma Cà Rồng Phần 1" }, { "id": "257", "name": "Đảo Ma Cà Rồng Phần 2" }, { "id": "258", "name": "Đảo Tự Sát" }, { "id": "259", "name": "Đại Chiến Bóng Tối" }, { "id": "260", "name": "Đại Quân Phiệt" }, { "id": "261", "name": "Đại Thánh Vương" }, { "id": "262", "name": "Đến Quỷ Cũng Uống Trà" }, { "id": "263", "name": "Đệ Tử Mạnh Nhất Kenichi" }, { "id": "264", "name": "Đỉnh Núi Khỉ" }, { "id": "265", "name": "Đóa Hoa Sống Trong Nước" }, { "id": "266", "name": "Đông Phương Chân Long" }, { "id": "267", "name": "Đọa Nhân - Jagaan" }, { "id": "268", "name": "Đội Quân Nhí Nhố" }, { "id": "269", "name": "Đột Kích Raider" }, { "id": "270", "name": "Đường Dẫn Đến Khung Thành Version 9x Bản Dịch Jindo Vui Nhất" }, { "id": "271", "name": "Đường Dẫn Đến KT - Bộ Đời Đầu Tiên" }, { "id": "272", "name": "Đường Dẫn Đến KT 01 - Kattobi Itto" }, { "id": "273", "name": "Đường Dẫn Đến KT 02 - Buttobi Itto" }, { "id": "274", "name": "Đường Mòn Máu" }, { "id": "275", "name": "Elfen Lied" }, { "id": "276", "name": "Em Gái Cương Thi Kyoko" }, { "id": "277", "name": "Emma" }, { "id": "278", "name": "Enigma" }, { "id": "279", "name": "Eyeshield 21" }, { "id": "280", "name": "Fairy Tail - Hội Pháp Sư" }, { "id": "281", "name": "Fairy Tail : Nhiệm Vụ Trăm Năm" }, { "id": "282", "name": "Fantasista Phần 1" }, { "id": "283", "name": "Fantasista Phần 2" }, { "id": "284", "name": "Final Fantasy - Lost Stranger" }, { "id": "285", "name": "Fire Emblem - Hasha No Tsurugi" }, { "id": "286", "name": "Fire Punch - Hỏa Quyền" }, { "id": "287", "name": "Flash Point" }, { "id": "288", "name": "Franken Fran" }, { "id": "289", "name": "Freesia" }, { "id": "290", "name": "Frogman" }, { "id": "291", "name": "Fujik F Fujio One Shot" }, { "id": "292", "name": "Fujiko F Fujio - Cậu Bé Ngoài Hành Tinh" }, { "id": "293", "name": "Fujiko F Fujio - Chiến Tranh Vũ Trụ" }, { "id": "294", "name": "Fujiko F Fujio - Mikio và Mikio" }, { "id": "295", "name": "Fujiko F Fujio - Mojako" }, { "id": "296", "name": "Fujiko F Fujio - Oneshot Horror" }, { "id": "297", "name": "Fujiko F Fujio - Phi Thuyền Thời Gian" }, { "id": "298", "name": "Fuuka" }, { "id": "299", "name": "Gamara" }, { "id": "300", "name": "Gamble Fish" }, { "id": "301", "name": "Ganba! Fly High" }, { "id": "302", "name": "Ganbare Genki - Khát Vọng Vô Địch" }, { "id": "303", "name": "Gangsta" }, { "id": "304", "name": "Gannibal Làng Ăn Thịt Người" }, { "id": "305", "name": "Gantz" }, { "id": "306", "name": "Gate Of Nightmare" }, { "id": "307", "name": "Gánh Xiếc Quái Dị" }, { "id": "308", "name": "Gekiryuuchi" }, { "id": "309", "name": "Get Backers" }, { "id": "310", "name": "GIA ĐÌNH CỦA BARAMON - TRUYỀN NHÂN CUỐI CÙNG CỦA MÔN PHÁI HUYỀN THOẠI" }, { "id": "311", "name": "Gia Đình Vui Nhộn" }, { "id": "312", "name": "Gia Sư Sát Thủ" }, { "id": "313", "name": "Giang Hồ Bá Đạo Ký" }, { "id": "314", "name": "Giant Killing" }, { "id": "315", "name": "Giác Quan Động Vật" }, { "id": "316", "name": "Giã Biệt Anh Hùng" }, { "id": "317", "name": "Giỏ Trái Cây (End)" }, { "id": "318", "name": "Give My Regards to Black Jack" }, { "id": "319", "name": "Gon Chú Khủng Long Siêu Quậy" }, { "id": "320", "name": "Good Ending" }, { "id": "321", "name": "Gosu Phần 1 (Tiếp Theo Long Phi Bất Bại)" }, { "id": "322", "name": "Gosu Phần 2" }, { "id": "323", "name": "Grand Blue (Truyện Siêu Bựa)" }, { "id": "324", "name": "Grashros" }, { "id": "325", "name": "Great Teacher Onizuka (Tôi Đi Tìm Tôi)" }, { "id": "326", "name": "Green Blood" }, { "id": "327", "name": "Green Worldz" }, { "id": "328", "name": "GTO Shonan 14 Day" }, { "id": "329", "name": "Gun x Clover" }, { "id": "330", "name": "Gundam Seed" }, { "id": "331", "name": "Gunslingers Girl" }, { "id": "332", "name": "Hajime Là Số 1" }, { "id": "333", "name": "Hajime No Ippo - Võ Sĩ Quyền Anh Ippo" }, { "id": "334", "name": "Hakaijuu" }, { "id": "335", "name": "Hammer Session! In High School" }, { "id": "336", "name": "Hammer Session! Phần 1" }, { "id": "337", "name": "Harekon Đạo Luật Nhiều Vợ" }, { "id": "338", "name": "Hatsukoi Limited" }, { "id": "339", "name": "Hatsukoi Zombie" }, { "id": "340", "name": "Hành Trình U Linh Giới" }, { "id": "341", "name": "Hầu gái rồng nhà Kobayashi" }, { "id": "342", "name": "Hắc Báo Liệt Truyện" }, { "id": "343", "name": "Hắc Thiên Long Phong Thần Ký" }, { "id": "344", "name": "Hải Hổ Phần 1" }, { "id": "345", "name": "Hải Hổ Phần 2" }, { "id": "346", "name": "Hải Hổ Phần 3" }, { "id": "347", "name": "Heat Thế Giới Ngầm" }, { "id": "348", "name": "Helck Manga" }, { "id": "349", "name": "Hell Dogs" }, { "id": "350", "name": "Hell's Kitchen" }, { "id": "351", "name": "Hello Komang" }, { "id": "352", "name": "Hellsing - Thợ Săn Ma Cà Rồng" }, { "id": "353", "name": "Hiệp Khách Giang Hồ" }, { "id": "354", "name": "Hiệp Khách Hành" }, { "id": "355", "name": "Hiệp Vương Truyền Kỳ" }, { "id": "356", "name": "High Position" }, { "id": "357", "name": "Hirahira's Youth Virtue" }, { "id": "358", "name": "Hoa Âm" }, { "id": "359", "name": "Hoàng Phi Hồng Bida" }, { "id": "360", "name": "Hoàng Phi Hồng Ngoại Truyện" }, { "id": "361", "name": "Hoàng Phi Hồng Phần 1" }, { "id": "362", "name": "Hoàng Phi Hồng Phần 2" }, { "id": "363", "name": "Hoàng Phi Hồng Phần 3" }, { "id": "364", "name": "Hoàng Tử Đại Lang" }, { "id": "365", "name": "Hoàng Tử Hoa" }, { "id": "366", "name": "Hoàng Tử Tennis Phần 1" }, { "id": "367", "name": "Hoàng Tử Tennis Phần 2" }, { "id": "368", "name": "Homunculus" }, { "id": "369", "name": "Horimiya" }, { "id": "370", "name": "Horizon" }, { "id": "371", "name": "Hòn Đá Thánh" }, { "id": "372", "name": "Hồ Sơ Xã Hội Đen" }, { "id": "373", "name": "Hố Nam" }, { "id": "374", "name": "Hỏa Phụng Liêu Nguyên" }, { "id": "375", "name": "Hỏa Vân Tà Thần Phần 1" }, { "id": "376", "name": "Hỏa Vân Tà Thần Phần 2" }, { "id": "377", "name": "Học Viện Thám Tử Q" }, { "id": "378", "name": "Hộ Chiếu Xanh" }, { "id": "379", "name": "Hội Mắt Nai" }, { "id": "380", "name": "Hội Pháp Sư" }, { "id": "381", "name": "Hung Thú Võ Giả" }, { "id": "382", "name": "Hunter x Hunter" }, { "id": "383", "name": "Huyền Thoại Đôi Cánh (CLAMP)" }, { "id": "384", "name": "Huyền Thoại Karate" }, { "id": "385", "name": "Huyền Thoại Thánh Long" }, { "id": "386", "name": "Huyền Thoại Võ Sĩ" }, { "id": "387", "name": "I''S" }, { "id": "388", "name": "I'm A Hero" }, { "id": "389", "name": "Ichi The Killer - Sát Thủ Số 1" }, { "id": "390", "name": "Ichigo 100% - Quần Lót Dâu Tây" }, { "id": "391", "name": "Ifrit Người Lửa" }, { "id": "392", "name": "Inari, Konkon, Koi Iroha" }, { "id": "393", "name": "INITIAL D" }, { "id": "394", "name": "Inside Mari" }, { "id": "395", "name": "Inuyasha" }, { "id": "396", "name": "Inuyashiki" }, { "id": "397", "name": "Isekai Monster Breeder" }, { "id": "398", "name": "ISSHOU SENKIN" }, { "id": "399", "name": "Itadaki Shunpei!! - Thần Hành Thái Bảo" }, { "id": "400", "name": "Jigokuraku - Địa Ngục Cực Lạc" }, { "id": "401", "name": "Jindodinho" }, { "id": "402", "name": "Jindô Xanh" }, { "id": "403", "name": "John Wick" }, { "id": "404", "name": "Jojo Part 7" }, { "id": "405", "name": "Jojo's Adventure 1 (Full Color)" }, { "id": "406", "name": "Jojo's Adventure 2 (Full Color)" }, { "id": "407", "name": "JoJo's Bizarre Adventure Part 2 - Battle Tendency" }, { "id": "408", "name": "JoJo's Bizarre Adventure Part 3 - Stardust Crusaders" }, { "id": "409", "name": "JOJO'S BIZARRE ADVENTURE PART 4 – DIAMOND IS UNBREAKABLE" }, { "id": "410", "name": "JoJo's Bizarre Adventure, Part 1 Phantom Blood" }, { "id": "411", "name": "Junji Ito - Black Paradox" }, { "id": "412", "name": "Junji Ito - DISSOLVING SERIES" }, { "id": "413", "name": "Junji Ito - Lovesickness" }, { "id": "414", "name": "Junji Ito - Nhân Gian Thất Cách" }, { "id": "415", "name": "Junji Ito - Quái Ngư" }, { "id": "416", "name": "Junji Ito - Vòng Xoắn Ốc" }, { "id": "417", "name": "Kaibutsu" }, { "id": "418", "name": "Kengan Ashura" }, { "id": "419", "name": "Kengan Omega" }, { "id": "420", "name": "Kenji Quyền Nhi Phương Thế Ngọc" }, { "id": "421", "name": "Kết Giới Sư" }, { "id": "422", "name": "Kẻ Phá Hoại Phần 1" }, { "id": "423", "name": "Kẻ Phá Hoại Phần 2" }, { "id": "424", "name": "Kid Gang - Nhóc Siêu Quậy" }, { "id": "425", "name": "Kiếm Hồn" }, { "id": "426", "name": "Kiếm Khách Beak Dong Soo" }, { "id": "427", "name": "Kindaichi 37 Tuổi" }, { "id": "428", "name": "Kindaichi Case 34 File" }, { "id": "429", "name": "Kindaichi Papa" }, { "id": "430", "name": "Kindaichi R" }, { "id": "431", "name": "King Of Fighter Toàn Tập" }, { "id": "432", "name": "King Of Fighter XII" }, { "id": "433", "name": "Kobayashi 3+1" }, { "id": "434", "name": "Komi Nữ Thần Sợ Giao Tiếp" }, { "id": "435", "name": "Kongou Banchou" }, { "id": "436", "name": "Kowashiya Gamon - Nhiệm Vụ Đặc Biệt" }, { "id": "437", "name": "KUDAN NO GOTOSHI" }, { "id": "438", "name": "Kungfu" }, { "id": "439", "name": "KUROKO NO BASKET - TUYỂN THỦ VÔ HÌNH" }, { "id": "440", "name": "Ký Sinh Thú" }, { "id": "441", "name": "Ký Sinh Trùng Biết Yêu" }, { "id": "442", "name": "Last Game" }, { "id": "443", "name": "Law Of Ueki" }, { "id": "444", "name": "Lãng Khách Kenshin" }, { "id": "445", "name": "Lạc Vào Thời Chiến Quốc" }, { "id": "446", "name": "Legend Of Tyr" }, { "id": "447", "name": "Level E" }, { "id": "448", "name": "Leviathan" }, { "id": "449", "name": "Life Is Money" }, { "id": "450", "name": "Long Hổ 5 Thế" }, { "id": "451", "name": "LONG HỔ MÔN NGOẠI TRUYỆN - VƯƠNG PHONG LÔI PHẦN 1" }, { "id": "452", "name": "LONG HỔ MÔN NGOẠI TRUYỆN - VƯƠNG PHONG LÔI PHẦN 2" }, { "id": "453", "name": "LONG HỔ MÔN NGOẠI TRUYỆN - VƯƠNG PHONG LÔI PHẦN 3" }, { "id": "454", "name": "LONG HỔ MÔN TIỀN TRUYỆN - VƯƠNG TIỂU LONG" }, { "id": "455", "name": "Long Phi Bất Bại Ngoại Truyện (Phần 2)" }, { "id": "456", "name": "LONG THẦN - TRUNG BỘ KHÚC" }, { "id": "457", "name": "Look Back" }, { "id": "458", "name": "Lối Sống Của Boichi" }, { "id": "459", "name": "Lỗ Nhìn Trộm" }, { "id": "460", "name": "Lời Thú Tội" }, { "id": "461", "name": "Lộc Đỉnh Ký" }, { "id": "462", "name": "Luật Sư Ác Quỷ" }, { "id": "463", "name": "Lucky Luke" }, { "id": "464", "name": "Lúc Đó Tôi Đã Chuyển Sinh Thành Slime" }, { "id": "465", "name": "Lưỡi Câu Vàng - Vua Câu Cá Musashi" }, { "id": "466", "name": "Lửa Thiêu Nhà Mitarai" }, { "id": "467", "name": "Lực Vương" }, { "id": "468", "name": "Lục Đạo Thiên Thư" }, { "id": "469", "name": "Ma Vương" }, { "id": "470", "name": "Machida-Kun's World" }, { "id": "471", "name": "MADE IN ABYSS – HÀNH TRÌNH ĐI XUỐNG ĐỊA NGỤC GIỮA VẺ ĐẸP THIÊN ĐƯỜNG" }, { "id": "472", "name": "Magi Mê Cung Pháp Thuật" }, { "id": "473", "name": "Magico" }, { "id": "474", "name": "Mahou Shoujo Site" }, { "id": "475", "name": "Mail" }, { "id": "476", "name": "MAR" }, { "id": "477", "name": "MAR Omega" }, { "id": "478", "name": "Masamune-kun's Revenge" }, { "id": "479", "name": "Mashle Phép Thuật Và Cơ Bắp" }, { "id": "480", "name": "Mái Ấm Của Bo-I" }, { "id": "481", "name": "Mắt Tím Trong Đêm" }, { "id": "482", "name": "Mạt Nhật Chiến Lạng" }, { "id": "483", "name": "Mặt Nạ Thủy Tinh" }, { "id": "484", "name": "ME-TERU NO KIMOCHI - THÊM 1 BỘ MANGA CỰC HAY CỦA OKU HIROYA (TÁC GIẢ GANTZ, INUYASHIKI)" }, { "id": "485", "name": "Miền Đất Hứa" }, { "id": "486", "name": "Miki Tớ Yêu Cậu" }, { "id": "487", "name": "MIXIM☆11" }, { "id": "488", "name": "Momo" }, { "id": "489", "name": "Mr Fullswing" }, { "id": "490", "name": "MUJIRUSHI" }, { "id": "491", "name": "MVP Quyết Không Lùi Bước" }, { "id": "492", "name": "My Dearest Self With Malice Aforethought" }, { "id": "493", "name": "MY DRESS-UP DARLING" }, { "id": "494", "name": "My Girl" }, { "id": "495", "name": "Nana" }, { "id": "496", "name": "Naniwa Tomoare" }, { "id": "497", "name": "Naruto" }, { "id": "498", "name": "Nàng Juliet Ở Trường Nội Trú" }, { "id": "499", "name": "Needless" }, { "id": "500", "name": "Neon Genesis Evangelion" }, { "id": "501", "name": "New Game" }, { "id": "502", "name": "Nghĩa Dũng Môn" }, { "id": "503", "name": "Ngôi Nhà Kinh Dị Và Con Ma Dễ Thương" }, { "id": "504", "name": "Ngôi Nhà Mặt Trời" }, { "id": "505", "name": "Ngọn Lửa Recca" }, { "id": "506", "name": "Người Cá Hồi" }, { "id": "507", "name": "Người Da Đỏ Lang Thang" }, { "id": "508", "name": "Người Đàn Ông Mít Ướt" }, { "id": "509", "name": "Người Máy Siêu Đẳng" }, { "id": "510", "name": "Người Thầy Dũng Cảm" }, { "id": "511", "name": "Người Trong Giang Hồ" }, { "id": "512", "name": "Người Vợ Chưa Chết" }, { "id": "513", "name": "Người X" }, { "id": "514", "name": "Nhà Có 5 Nàng Dâu" }, { "id": "515", "name": "Nhà trẻ Hanamaru" }, { "id": "516", "name": "Nhà Trọ Nhất Khắc" }, { "id": "517", "name": "Nhật Ký Midori" }, { "id": "518", "name": "Những Bông Hoa Ác" }, { "id": "519", "name": "Những Câu Truyện Về Người Cá" }, { "id": "520", "name": "Những Kẻ Mất Ngủ Sau Giờ Học" }, { "id": "521", "name": "Nine Peaks Cửu Lĩnh" }, { "id": "522", "name": "Ninja Hattori" }, { "id": "523", "name": "Ninja Loạn Thị 1997" }, { "id": "524", "name": "Ninja Ninku" }, { "id": "525", "name": "Noragami Vị Thần Lang Thang" }, { "id": "526", "name": "Nozoki Ana" }, { "id": "527", "name": "Nơi Dãy Núi Điên Dại" }, { "id": "528", "name": "Nữ Hoàng Ai Cập" }, { "id": "529", "name": "Old Boy" }, { "id": "530", "name": "Old Man Logan" }, { "id": "531", "name": "One Piece - Vua Hải Tặc" }, { "id": "532", "name": "One Punch Man" }, { "id": "533", "name": "Orange Yane no Chiisana Ie - Ngôi Nhà Nhỏ Có Mái Màu Cam" }, { "id": "534", "name": "Origin" }, { "id": "535", "name": "Osamu Tezuka - Bài Ca Ngợi Kirihito" }, { "id": "536", "name": "Osamu Tezuka - Black Jack Đại Tuyển Tập Màu" }, { "id": "537", "name": "Osamu Tezuka - Dororo" }, { "id": "538", "name": "Osamu Tezuka - Hiệp Sĩ Đeo Nơ" }, { "id": "539", "name": "Osamu Tezuka - Hố Thiên Thạch" }, { "id": "540", "name": "Osamu Tezuka - Khúc Ca Apollo" }, { "id": "541", "name": "Osamu Tezuka - Ngọn Đồi Thiên Thần" }, { "id": "542", "name": "Osamu Tezuka - Nhân Gian Côn Trùng Ký" }, { "id": "543", "name": "Osamu Tezuka - Phoenix" }, { "id": "544", "name": "Osamu Tezuka - Thư Gửi Adolf" }, { "id": "545", "name": "Osamu Tezuka - Tôn Ngộ Không" }, { "id": "546", "name": "Osamu Tezuka - Truyền Thuyết Đức Phật" }, { "id": "547", "name": "Osamu Tezuka - Tuyển Tập Truyện Ngắn" }, { "id": "548", "name": "Osamu Tezuka - Vampires" }, { "id": "549", "name": "Osamu Tezuka - Wonder 3" }, { "id": "550", "name": "Ouran High School Host Club - 6 Chàng Trai Và 1 Cô Gái" }, { "id": "551", "name": "Ô Long Viện - Linh Vật Sống" }, { "id": "552", "name": "Ô Long Viện - Siêu Buồn Cười" }, { "id": "553", "name": "Ô Long Viện - Siêu Kinh Điển" }, { "id": "554", "name": "Ô Long Viện - Tình Huynh Đệ" }, { "id": "555", "name": "Ổn Thụy An Quần Hiệp Truyện Phần 1" }, { "id": "556", "name": "Ổn Thụy An Quần Hiệp Truyện Phần 2" }, { "id": "557", "name": "Ớt Bảy Màu" }, { "id": "558", "name": "Pandora Hearts" }, { "id": "559", "name": "Pet" }, { "id": "560", "name": "Pháo Đài Của Sách Khải Huyền" }, { "id": "561", "name": "Pháo Hoa Mùa Đông" }, { "id": "562", "name": "Pháp Sư Tiễn Táng" }, { "id": "563", "name": "Phiên Vân Và Phúc Vũ Phần 1" }, { "id": "564", "name": "Phiên Vân Và Phúc Vũ Phần 2" }, { "id": "565", "name": "Phong Thần Ký 3 Phần" }, { "id": "566", "name": "Phong Vân Full Màu" }, { "id": "567", "name": "Phong Vân Thần Võ Kỷ" }, { "id": "568", "name": "Phù Thủy Thời Hiện Đại" }, { "id": "569", "name": "Phụ Chương Màu Dragon Ball" }, { "id": "570", "name": "Ping Pong" }, { "id": "571", "name": "Pokemon Đặc Biệt" }, { "id": "572", "name": "Pokemon Horizons" }, { "id": "573", "name": "Pokemon Pippi (Bản Mới)" }, { "id": "574", "name": "Ponkotsu Ponko" }, { "id": "575", "name": "PPPPPP" }, { "id": "576", "name": "Psyren - Tấm Thẻ Bí Ẩn" }, { "id": "577", "name": "Q.E.D Điều Phải Chứng Minh" }, { "id": "578", "name": "QP" }, { "id": "579", "name": "Quái Vật Bàn Bên" }, { "id": "580", "name": "Quả Bóng Vàng" }, { "id": "581", "name": "Quyền Đấu The King" }, { "id": "582", "name": "Quyển Sách Kỳ Bí 1" }, { "id": "583", "name": "Quyển Sách Kỳ Bí 2" }, { "id": "584", "name": "Ragna Crimson" }, { "id": "585", "name": "Rai Võ Tướng Ngân Hà" }, { "id": "586", "name": "Rainbow" }, { "id": "587", "name": "Ran Và Thế Giới Tro Tàn" }, { "id": "588", "name": "Record Of Ragnarok" }, { "id": "589", "name": "Record Of Ragnarok - Legend Of Lubu" }, { "id": "590", "name": "Reincarnation no Kaben (Cánh Hoa Luân Hồi)" }, { "id": "591", "name": "Renai Boukun" }, { "id": "592", "name": "Resident Evil Heavenly Island" }, { "id": "593", "name": "Resident Evil: The Marhawa Desire" }, { "id": "594", "name": "Rinne - Cảnh Giới Luân Hồi" }, { "id": "595", "name": "ROCKMAN - CHIẾN BINH THẾ GIỚI ẢO" }, { "id": "596", "name": "Rockman 1" }, { "id": "597", "name": "Rockman 3" }, { "id": "598", "name": "Rockman 8" }, { "id": "599", "name": "ROSARIO + VAMPIRE SEASON II" }, { "id": "600", "name": "ROSARIO TO VAMPIRE P1" }, { "id": "601", "name": "ROSEN GARTEN SAGA" }, { "id": "602", "name": "Saenai Riman to Yankee Joshi Kousei" }, { "id": "603", "name": "Saga Kiếm Thánh Sử" }, { "id": "604", "name": "sai" }, { "id": "605", "name": "Sakura Thủ Lĩnh Thẻ Bài - Thẻ Bài Trong Suốt" }, { "id": "606", "name": "SAMURAI SHODOWN" }, { "id": "607", "name": "Sanctuary" }, { "id": "608", "name": "Sanka Rea" }, { "id": "609", "name": "Saver Vị Cứu Tinh" }, { "id": "610", "name": "Sát Đạo Hành Giả" }, { "id": "611", "name": "Seizon Life" }, { "id": "612", "name": "Sekirei" }, { "id": "613", "name": "Senkou Girl" }, { "id": "614", "name": "SENSEI CAN'T TEACH ME ABOUT LOVE" }, { "id": "615", "name": "Sentai Dai Shikkaku" }, { "id": "616", "name": "Shiganbana" }, { "id": "617", "name": "Shigurui - Cuồng Tử" }, { "id": "618", "name": "Shin - Cậu Bé Bút Chì" }, { "id": "619", "name": "Shokuryou Jinrui P1" }, { "id": "620", "name": "Shokuryou Jinrui P2" }, { "id": "621", "name": "Shoukoku no Altair" }, { "id": "622", "name": "Siêu Đầu Bếp Tí Hon" }, { "id": "623", "name": "Siêu Nhân Hột Vịt Muối" }, { "id": "624", "name": "Siêu Nhân Locke 1997" }, { "id": "625", "name": "Siêu Nhân Mì Ăn Liền" }, { "id": "626", "name": "Siêu Nhân Việt Nam" }, { "id": "627", "name": "Siêu Quậy Kotaro Phần 2" }, { "id": "628", "name": "Siêu Sao Đường Dài" }, { "id": "629", "name": "Sinh Ra Dưới Ánh Trăng" }, { "id": "630", "name": "Sket Dance" }, { "id": "631", "name": "Slave Game P1" }, { "id": "632", "name": "Slave Game P2" }, { "id": "633", "name": "Smiley" }, { "id": "634", "name": "Song Hùng Kỳ Hiệp" }, { "id": "635", "name": "Song Long Đại Đường" }, { "id": "636", "name": "Soul Eater" }, { "id": "637", "name": "Sói Mang Con" }, { "id": "638", "name": "Sống Lại Tuổi 20" }, { "id": "639", "name": "Sống Sót Trên Đảo Hoang" }, { "id": "640", "name": "Sống Sót Trên Đảo Hoang - Bản 9x" }, { "id": "641", "name": "Sơn Hải Nghịch Chiến" }, { "id": "642", "name": "Sơn Tặc Vương Seyu" }, { "id": "643", "name": "Sợi Xích Thần" }, { "id": "644", "name": "Spice And Wolf" }, { "id": "645", "name": "Spirit Circle" }, { "id": "646", "name": "Street Fighter" }, { "id": "647", "name": "Summer Time Rendering" }, { "id": "648", "name": "Sun Ken Rock" }, { "id": "649", "name": "Super Dragon Ball Heroes Big Bang Mission" }, { "id": "650", "name": "Super Dragon Ball Heroes Universe Mission" }, { "id": "651", "name": "Suzuka" }, { "id": "652", "name": "Swan Vũ Khúc Thiên Nga" }, { "id": "653", "name": "Tam Quốc Chí - Liên Hoàn Họa" }, { "id": "654", "name": "Tam Quốc Chí 2 Phần - Lý Chí Thanh" }, { "id": "655", "name": "Tam Quốc Chí Dị" }, { "id": "656", "name": "Tantei no Tantei" }, { "id": "657", "name": "Tay Súng Miền Tây" }, { "id": "658", "name": "Tân Ninja Hattori" }, { "id": "659", "name": "Tân Tác Long Hổ Môn" }, { "id": "660", "name": "Tân Thủy Hử" }, { "id": "661", "name": "Tân Từ Điển Kỳ Bí" }, { "id": "662", "name": "Tây Du Ký Hài Hước" }, { "id": "663", "name": "Tây Du Ký Liên Hoàn Họa" }, { "id": "664", "name": "TÂY DU NGOẠI TRUYỆN" }, { "id": "665", "name": "Tây Hành Kỷ" }, { "id": "666", "name": "TÂY HÀNH THẦN CHIẾN THIÊN" }, { "id": "667", "name": "Tấm Tấn Ký" }, { "id": "668", "name": "Tenkuu Shinpan - Đối Đầu Với Trọng Lực!" }, { "id": "669", "name": "Teppi Golf - Tetsuya Chiba" }, { "id": "670", "name": "TERRA FORMARS" }, { "id": "671", "name": "Tetsuya Chiba - Cô Bé Mồ Côi" }, { "id": "672", "name": "Tetsuya Chiba - Gaki" }, { "id": "673", "name": "Tetsuya Chiba - Mosa" }, { "id": "674", "name": "Tetsuya Chiba - Otokotachi" }, { "id": "675", "name": "Tetsuya Chiba - Rina" }, { "id": "676", "name": "Tetsuya Chiba - Thiết Quyền Lãng Tử" }, { "id": "677", "name": "Thanh Gươm Diệt Quỷ - Kimetsu No Yaiba" }, { "id": "678", "name": "Thanh Gươm Truyền Thuyết" }, { "id": "679", "name": "Thanh Kiếm Của Musashi" }, { "id": "680", "name": "Thành Cát Tư Hãn" }, { "id": "681", "name": "Thám Tử Eiji" }, { "id": "682", "name": "Thám Tử Lừng Danh Conan" }, { "id": "683", "name": "Thám Tử Tâm Linh" }, { "id": "684", "name": "Thánh Chiến Ký Elna Saga" }, { "id": "685", "name": "Thần Binh Huyền Kỳ Phần 1" }, { "id": "686", "name": "Thần Binh Huyền Kỳ Phần 2" }, { "id": "687", "name": "Thần Binh Huyền Kỳ Phần 3" }, { "id": "688", "name": "THẦN BINH KHƯU PHÚC LONG" }, { "id": "689", "name": "THẦN BINH TRUYỆN KỲ F1" }, { "id": "690", "name": "THẦN BINH TRUYỆN KỲ F2 - NHỊ CHIẾN BIÊN" }, { "id": "691", "name": "Thần Châu Kỳ Hiệp" }, { "id": "692", "name": "Thần Chưởng" }, { "id": "693", "name": "Thần Chưởng Long Cửu Châu" }, { "id": "694", "name": "Thần Chưởng Long Kiếm Phi" }, { "id": "695", "name": "Thần Điêu Đại Hiệp" }, { "id": "696", "name": "Thần Đồng Đất Việt" }, { "id": "697", "name": "Thần Khí Regalia" }, { "id": "698", "name": "Thần Kiếm Takeru" }, { "id": "699", "name": "Thần Y Asklepios" }, { "id": "700", "name": "Thất Hình Đại Tội" }, { "id": "701", "name": "Thằng Ngố Thiên Tài Bakabon" }, { "id": "702", "name": "Thạch Hắc Long Truyện" }, { "id": "703", "name": "The Batman Who Laughs" }, { "id": "704", "name": "THE CHEF - ĐẦU BẾP TRỨ DANH" }, { "id": "705", "name": "The Duke of Death and His Maid" }, { "id": "706", "name": "THE FABLE 3: THE THIRD SECRET" }, { "id": "707", "name": "The Fable Phần 1" }, { "id": "708", "name": "The Fable Phần 2 - The Second Contact" }, { "id": "709", "name": "THE GAMER - THẾ GIỚI GAME THỦ" }, { "id": "710", "name": "The King Of Fighter - Sự Khởi Đầu Mới" }, { "id": "711", "name": "THE WORLD GOD ONLY KNOWS" }, { "id": "712", "name": "Thế Ước Người Và Rồng" }, { "id": "713", "name": "Thi Quỷ - Shiki" }, { "id": "714", "name": "Thiên Địa Nam Nhi" }, { "id": "715", "name": "Thiên Hạ Vô Địch" }, { "id": "716", "name": "Thiên Hạ Vô Song" }, { "id": "717", "name": "Thiên Lang Liệt Truyện Phần 1" }, { "id": "718", "name": "Thiên Lang Liệt Truyện Phần 2" }, { "id": "719", "name": "Thiên Long Bát Bộ" }, { "id": "720", "name": "Thiên Lý Nhãn" }, { "id": "721", "name": "Thiên Thần Bóng Tối" }, { "id": "722", "name": "Thiên Thần Cuối Thế Kỷ" }, { "id": "723", "name": "Thiên Thần Tokyo" }, { "id": "724", "name": "Thiên Thần Trên Đường Đua" }, { "id": "725", "name": "Thiên Thần Và Ác Quỷ" }, { "id": "726", "name": "THIÊN TỬ TRUYỀN KỲ PHẦN 1 - CƠ PHÁT KHAI CHU BẢN" }, { "id": "727", "name": "THIÊN TỬ TRUYỀN KỲ PHẦN 2 - TẦN VƯƠNG DOANH CHÍNH" }, { "id": "728", "name": "THIÊN TỬ TRUYỀN KỲ PHẦN 3 - LƯU MANH THIÊN TỬ" }, { "id": "729", "name": "THIÊN TỬ TRUYỀN KỲ PHẦN 4 - ĐẠI ĐƯỜNG UY LONG" }, { "id": "730", "name": "THIÊN TỬ TRUYỀN KỲ PHẦN 5 - NHƯ LAI THẦN CHƯỞNG" }, { "id": "731", "name": "THIÊN TỬ TRUYỀN KỲ PHẦN 6 - HỒNG VŨ ĐẠI ĐẾ" }, { "id": "732", "name": "THIÊN TỬ TRUYỀN KỲ PHẦN 7 - TAM QUỐC KIÊU HÙNG" }, { "id": "733", "name": "THIÊN TỬ TRUYỀN KỲ PHẦN 8 - THƯƠNG THIÊN BÁ HOÀNG" }, { "id": "734", "name": "Thiên Vương Thần Kiếm" }, { "id": "735", "name": "Thiết Quyền A Lực" }, { "id": "736", "name": "Thiết Tướng Tung Hoành" }, { "id": "737", "name": "Thiếu Lâm Đệ 8 Đồng Nhân" }, { "id": "738", "name": "Thiếu Niên Vương Phần 1" }, { "id": "739", "name": "Thiếu Niên Vương Phần 2" }, { "id": "740", "name": "This Man" }, { "id": "741", "name": "Thích Khách Tín Điều" }, { "id": "742", "name": "Thị Trấn Tình Yêu" }, { "id": "743", "name": "Thị Trấn Vắng Mình Tôi" }, { "id": "744", "name": "Thổ Thần Tập Sự" }, { "id": "745", "name": "Thời Gió Lốc" }, { "id": "746", "name": "THREE DAYS OF HAPPINESS" }, { "id": "747", "name": "Thuốc Lá Và Quả Anh Đào" }, { "id": "748", "name": "Thủy Hử Lý Chí Thanh" }, { "id": "749", "name": "Thủy Thủ Mặt Trăng" }, { "id": "750", "name": "Thục Sơn Kiếm Hiệp Truyện" }, { "id": "751", "name": "Tiến Sĩ Stones" }, { "id": "752", "name": "Tiểu Đầu Bếp Cung Đình Phần 1, 2" }, { "id": "753", "name": "Tiểu Hòa Thượng (Dịch Full)" }, { "id": "754", "name": "Tiểu Ma Thần" }, { "id": "755", "name": "Tiểu Nhân" }, { "id": "756", "name": "Tiểu Thần Zenki" }, { "id": "757", "name": "Tiểu Thư Nhu Đạo - Naoki Urasawa" }, { "id": "758", "name": "Tiệm Thú Kiểng" }, { "id": "759", "name": "Tìm Ánh Trăng Tròn" }, { "id": "760", "name": "Tình Yêu Diệu Kỳ" }, { "id": "761", "name": "Tình Yêu Giết Chóc" }, { "id": "762", "name": "To Love Ru" }, { "id": "763", "name": "To Love Ru Darkness 18+" }, { "id": "764", "name": "Togari Phần 1" }, { "id": "765", "name": "Togari Shiro Phần 2" }, { "id": "766", "name": "TOKYO GHOUL PHẦN 1" }, { "id": "767", "name": "TOKYO GHOUL RE Phần 2" }, { "id": "768", "name": "Tokyo Revengers" }, { "id": "769", "name": "TOMODACHI GAME - TRÒ CHƠI TÌNH BẠN" }, { "id": "770", "name": "Toriko" }, { "id": "771", "name": "Toto Cuộc Phiêu Lưu Kỳ Thú" }, { "id": "772", "name": "TOUGH - MIYAZAWA KIICHI" }, { "id": "773", "name": "Tòa Tháp Ma" }, { "id": "774", "name": "Tôi Vẫn Còn Sống" }, { "id": "775", "name": "Trigun" }, { "id": "776", "name": "Trò Chơi Tìm Xác" }, { "id": "777", "name": "Trump" }, { "id": "778", "name": "Trung Hoa Anh Hùng 2021" }, { "id": "779", "name": "Truyền Nhân Atula Phần 1" }, { "id": "780", "name": "Truyền Nhân Atula Phần 2" }, { "id": "781", "name": "Truyền Thuyết Hoàng Kim Thú" }, { "id": "782", "name": "Truyện Cổ Gấm Hoa" }, { "id": "783", "name": "Trùng Sư" }, { "id": "784", "name": "Trường Học Bí Ẩn" }, { "id": "785", "name": "Trường Học Ngục Tù" }, { "id": "786", "name": "Tsuka no Ma no Ichika" }, { "id": "787", "name": "Tuyết Sơn Phi Hồ" }, { "id": "788", "name": "Tuyển Tập Truyện Kinh Dị Của Junji Ito" }, { "id": "789", "name": "TUYỆT THẾ VÔ SONG PHẦN 1" }, { "id": "790", "name": "TUYỆT THẾ VÔ SONG PHẦN 2" }, { "id": "791", "name": "Tứ Đại Danh Bổ" }, { "id": "792", "name": "Tý Quậy" }, { "id": "793", "name": "U Minh Ngụy Tượng" }, { "id": "794", "name": "Ubel Blatt" }, { "id": "795", "name": "Unbalance X Unbalance" }, { "id": "796", "name": "Undead Unluck" }, { "id": "797", "name": "Until Death Do Us Part" }, { "id": "798", "name": "Urasai" }, { "id": "799", "name": "Usagi Drop" }, { "id": "800", "name": "Vagabond - Lãng Khách" }, { "id": "801", "name": "Vampire Knight" }, { "id": "802", "name": "Văn Hào Lưu Lạc" }, { "id": "803", "name": "Vinland Saga" }, { "id": "804", "name": "Vị Vua Không Ngai" }, { "id": "805", "name": "Võ Thần" }, { "id": "806", "name": "Võ Thần Chung Cực" }, { "id": "807", "name": "Võ Thần Phi Thiên" }, { "id": "808", "name": "Võ Thần Phượng Hoàng" }, { "id": "809", "name": "VỢ TÔI LÀ WAGATSUMA-SAN" }, { "id": "810", "name": "Vua Bánh Mì" }, { "id": "811", "name": "Vua Bắn Bi" }, { "id": "812", "name": "Vua Bếp Sushi" }, { "id": "813", "name": "Vua Bowling" }, { "id": "814", "name": "Vua Bóng Ném" }, { "id": "815", "name": "Vua Pháp Thuật - Shaman King" }, { "id": "816", "name": "Vua Trò Chơi Full Màu" }, { "id": "817", "name": "Vua Trò Chơi Tankobon (Bản Trắng Đen 4k)" }, { "id": "818", "name": "Vùng Đất Xa Xăm" }, { "id": "819", "name": "Vương Quốc Bảo Thạch" }, { "id": "820", "name": "VƯƠNG TIỂU LONG NGOẠI TRUYỆN" }, { "id": "821", "name": "Vương Tử Takeru Phần 1,2" }, { "id": "822", "name": "Vườn Thú Điên Rồ" }, { "id": "823", "name": "Wallman" }, { "id": "824", "name": "Wannabe" }, { "id": "825", "name": "Watashi no Arika" }, { "id": "826", "name": "Wild Life - Cuộc Sống Hoang Dã" }, { "id": "827", "name": "WILD POLICE STORY - Gosho Aoyama" }, { "id": "828", "name": "Will You Marry Me Again If You Are Reborn" }, { "id": "829", "name": "World's End Harem 18+" }, { "id": "830", "name": "Worst" }, { "id": "831", "name": "X Bạo Tộc" }, { "id": "832", "name": "Xì Trum" }, { "id": "833", "name": "Xmen Những Người Bạn Bí Ẩn" }, { "id": "834", "name": "Xuân Thu Chiến Hùng" }, { "id": "835", "name": "Y Đội Rồng" }, { "id": "836", "name": "Yamada-Kun To 7 Nin No Majo" }, { "id": "837", "name": "Yokai Girls" }, { "id": "838", "name": "Yona Công Chúa Bình Minh" }, { "id": "839", "name": "Yotsuba - Cỏ 4 Lá" }, { "id": "840", "name": "Young GTO" }, { "id": "841", "name": "Your Name" }, { "id": "842", "name": "Yu-Gi-Oh! R" }, { "id": "843", "name": "Yu-Gi-Oh! RX" }, { "id": "844", "name": "Yume De Aetara" }, { "id": "845", "name": "Yuuna Và Suối Nước Nóng Ma Ám" }, { "id": "846", "name": "Ỷ Thiên Đồ Long Ký" }, { "id": "847", "name": "Zashiki Onna" }, { "id": "848", "name": "Zashisu" }, { "id": "849", "name": "Zetman" }, { "id": "850", "name": "Zippy Ziggy" }, { "id": "851", "name": "ZOMBIE-LOAN" }];
+        const featuredData = [
+            { "id_name": "than_dong_dat_viet", "name": "Thần Đồng Đất Việt", "title": "Thần Đồng Đất Việt", "img": "covers/than_dong_dat_viet.png", "bg": "backgrounds/than_dong_dat_viet.jpg", "tagline": "Trạng Tý thông minh cùng chúng bạn bảo vệ giang sơn Việt!", "accent": "#ffd700" },
+            { "id_name": "doremon", "name": "Doremon", "title": "Doremon - Doraemon", "img": "covers/doremon.png", "bg": "backgrounds/doremon.jpg", "tagline": "Chú mèo máy thông minh đến từ tương lai với chiếc túi thần kỳ!", "accent": "#00bfff" },
+            { "id_name": "conan", "name": "Conan", "title": "Thám Tử Lừng Danh Conan", "img": "covers/conan.jpg", "bg": "backgrounds/conan.jpg", "tagline": "Sự thật luôn chỉ có một! Thám tử thiên tài teo nhỏ!", "accent": "#002b80" },
+            { "id_name": "dragon_ball", "name": "Dragon Ball", "title": "Dragon Ball - Bảy Viên Ngọc Rồng", "img": "covers/dragon_ball.png", "bg": "backgrounds/dragon_ball.jpg", "tagline": "Cuộc hành trình tìm kiếm ngọc rồng và bảo vệ Trái Đất của Goku!", "accent": "#ff6600" },
+            { "id_name": "ty_quay", "name": "Tý Quậy", "title": "Tý Quậy", "img": "covers/ty_quay.jpg", "bg": "backgrounds/ty_quay.jpg", "tagline": "Thế giới tinh nghịch, hài hước đầy ắp tiếng cười tuổi thơ!", "accent": "#ff3333" },
+            { "id_name": "o_long_vien", "name": "Ô Long Viện", "title": "Ô Long Viện", "img": "covers/o_long_vien.jpg", "bg": "backgrounds/o_long_vien.jpg", "tagline": "Bốn thầy trò vui nhộn đại náo võ lâm với những pha kungfu hài hước!", "accent": "#ff9900" },
+            { "id_name": "shin", "name": "Shin - Cậu Bé Bút Chì", "title": "Shin - Cậu Bé Bút Chì", "img": "covers/shin.jpg", "bg": "backgrounds/shin.jpg", "tagline": "Cậu bé bút chì siêu quậy và những tình huống dở khóc dở cười!", "accent": "#ffcc00" },
+            { "id_name": "naruto", "name": "Naruto", "title": "Naruto - Nhẫn Giả Naruto", "img": "covers/naruto.jpg", "bg": "backgrounds/naruto.jpg", "tagline": "Con đường nhẫn giả và ước mơ trở thành Hokage vĩ đại nhất!", "accent": "#ff9900" },
+            { "id_name": "miko", "name": "Nhóc Miko", "title": "Nhóc Miko", "img": "covers/miko.jpg", "bg": "backgrounds/miko.jpg", "tagline": "Cuộc sống đời thường vui tươi, đáng yêu của cô bé tiểu học Miko!", "accent": "#ff66cc" },
+            { "id_name": "jujutsu_kaisen", "name": "Chú Thuật Hồi Chiến", "title": "Chú Thuật Hồi Chiến - Jujutsu Kaisen", "img": "covers/jujutsu_kaisen.png", "bg": "backgrounds/jujutsu_kaisen.jpg", "tagline": "Cuộc chiến chống lại những nguyền hồn cứu rỗi thế gian!", "accent": "#9933ff" },
+            { "id_name": "inuyasha", "name": "Inuyasha", "img": "covers/inuyasha.png", "bg": "backgrounds/inuyasha.jpg", "accent": "#e60000" },
+            { "id_name": "one_piece", "name": "One Piece", "img": "covers/one_piece.png", "bg": "backgrounds/one_piece.jpg", "accent": "#ff4d4d" },
+            { "id_name": "chu_thoong", "name": "Chú Thoòng", "img": "covers/chu_thoong.jpg", "bg": "backgrounds/chu_thoong.jpg", "accent": "#ffd700" },
+            { "id_name": "cuon_tu_dien", "name": "Cuốn Từ Điển Kỳ Bí", "img": "covers/cuon_tu_dien.jpg", "bg": "backgrounds/cuon_tu_dien.jpg", "accent": "#00bfff" },
+            { "id_name": "hattori", "name": "Ninja Hattori", "img": "covers/hattori.jpg", "bg": "backgrounds/hattori.jpg", "accent": "#0066cc" },
+            { "id_name": "that_hinh", "name": "Thất Hình Đại Tội", "img": "covers/that_hinh.jpg", "bg": "backgrounds/that_hinh.jpg", "accent": "#ff3300" },
+            { "id_name": "bleach", "name": "Bleach", "img": "covers/bleach.png", "bg": "backgrounds/bleach.jpg", "accent": "#33ccff" },
+            { "id_name": "cau_be_mat_troi", "name": "Cậu Bé Mặt Trời", "img": "covers/cau_be_mat_troi.jpg", "bg": "backgrounds/cau_be_mat_troi.jpg", "accent": "#ff9900" },
+            { "id_name": "chie", "name": "Chie - Cô Bé Hạt Tiêu", "img": "covers/chie.jpg", "bg": "backgrounds/chie.jpg", "accent": "#ff66cc" },
+            { "id_name": "croket", "name": "Cuộc Phiêu Lưu Của Croket", "img": "covers/croket.jpg", "bg": "backgrounds/croket.jpg", "accent": "#ffcc00" },
+            { "id_name": "hello_komang", "name": "Hello Komang", "img": "covers/hello_komang.jpg", "bg": "backgrounds/hello_komang.jpg", "accent": "#33ccff" },
+            { "id_name": "death_note", "name": "Death Note", "img": "covers/death_note.jpg", "bg": "backgrounds/death_note.jpg", "accent": "#4d4d4d" },
+            { "id_name": "dr_stone", "name": "Dr Stone", "img": "covers/dr_stone.jpg", "bg": "backgrounds/dr_stone.jpg", "accent": "#00ffcc" },
+            { "id_name": "dr_slump", "name": "Dr. Slump", "img": "covers/dr_slump.jpg", "bg": "backgrounds/dr_slump.jpg", "accent": "#ff3366" },
+            { "id_name": "hunter_x_hunter", "name": "Hunter x Hunter", "img": "covers/hunter_x_hunter.jpg", "bg": "backgrounds/hunter_x_hunter.jpg", "accent": "#2eb82e" },
+            { "id_name": "hoang_phi_hong", "name": "Hoàng Phi Hồng", "img": "covers/hoang_phi_hong.jpg", "bg": "backgrounds/hoang_phi_hong.jpg", "accent": "#ff3300" },
+            { "id_name": "nu_hoang_ai_cap", "name": "Nữ Hoàng Ai Cập", "img": "covers/nu_hoang_ai_cap.jpg", "bg": "backgrounds/nu_hoang_ai_cap.jpg", "accent": "#e6b800" },
+            { "id_name": "mar", "name": "MAR", "img": "covers/mar.jpg", "bg": "backgrounds/mar.jpg", "accent": "#00ff66" },
+            { "id_name": "blue_lock", "name": "Blue Lock", "img": "covers/blue_lock.jpg", "bg": "backgrounds/blue_lock.jpg", "accent": "#0055ff" },
+            { "id_name": "black_jack", "name": "Black Jack", "img": "covers/black_jack.jpg", "bg": "backgrounds/black_jack.jpg", "accent": "#333333" },
+            { "id_name": "doi_quan_nhi_nho", "name": "Đội Quân Nhí Nhố", "img": "covers/doi_quan_nhi_nho.jpg", "bg": "backgrounds/doi_quan_nhi_nho.jpg", "accent": "#ff99cc" }, { "id_name": "conan_dac_biet", "name": "Conan Đặc Biệt", "title": "Conan Đặc Biệt", "img": "covers/conan_dac_biet.jpg", "bg": "backgrounds/conan.jpg", "tagline": "Ấn bản đặc biệt tập hợp các vụ án đỉnh cao!", "accent": "#002b80" }, { "id_name": "mar_omega", "name": "MAR Omega", "title": "MAR Omega", "img": "covers/mar_omega.jpg", "bg": "backgrounds/mar.jpg", "accent": "#00ff66" }, { "id_name": "tan_hattori", "name": "Tân Ninja Hattori", "title": "Tân Ninja Hattori", "img": "covers/tan_hattori.jpg", "bg": "backgrounds/hattori.jpg", "accent": "#0066cc" }
+        ];
+        const slideshowData = [
+            { "id_name": "than_dong_dat_viet", "name": "Thần Đồng Đất Việt", "title": "Thần Đồng Đất Việt", "img": "covers/than_dong_dat_viet.png", "bg": "backgrounds/than_dong_dat_viet.jpg", "tagline": "Trạng Tý thông minh cùng chúng bạn bảo vệ giang sơn Việt!", "accent": "#ffd700" },
+            { "id_name": "doremon", "name": "Doremon", "title": "Doremon - Doraemon", "img": "covers/doremon.png", "bg": "backgrounds/doremon.jpg", "tagline": "Chú mèo máy thông minh đến từ tương lai với chiếc túi thần kỳ!", "accent": "#00bfff" },
+            { "id_name": "conan", "name": "Conan", "title": "Thám Tử Lừng Danh Conan", "img": "covers/conan.jpg", "bg": "backgrounds/conan.jpg", "tagline": "Sự thật luôn chỉ có một! Thám tử thiên tài teo nhỏ!", "accent": "#002b80" },
+            { "id_name": "dragon_ball", "name": "Dragon Ball", "title": "Dragon Ball - Bảy Viên Ngọc Rồng", "img": "covers/dragon_ball.png", "bg": "backgrounds/dragon_ball.jpg", "tagline": "Cuộc hành trình tìm kiếm ngọc rồng và bảo vệ Trái Đất của Goku!", "accent": "#ff6600" },
+            { "id_name": "ty_quay", "name": "Tý Quậy", "title": "Tý Quậy", "img": "covers/ty_quay.jpg", "bg": "backgrounds/ty_quay.jpg", "tagline": "Thế giới tinh nghịch, hài hước đầy ắp tiếng cười tuổi thơ!", "accent": "#ff3333" },
+            { "id_name": "o_long_vien", "name": "Ô Long Viện", "title": "Ô Long Viện", "img": "covers/o_long_vien.jpg", "bg": "backgrounds/o_long_vien.jpg", "tagline": "Bốn thầy trò vui nhộn đại náo võ lâm với những pha kungfu hài hước!", "accent": "#ff9900" },
+            { "id_name": "shin", "name": "Shin - Cậu Bé Bút Chì", "title": "Shin - Cậu Bé Bút Chì", "img": "covers/shin.jpg", "bg": "backgrounds/shin.jpg", "tagline": "Cậu bé bút chì siêu quậy và những tình huống dở khóc dở cười!", "accent": "#ffcc00" },
+            { "id_name": "naruto", "name": "Naruto", "title": "Naruto - Nhẫn Giả Naruto", "img": "covers/naruto.jpg", "bg": "backgrounds/naruto.jpg", "tagline": "Con đường nhẫn giả và ước mơ trở thành Hokage vĩ đại nhất!", "accent": "#ff9900" },
+            { "id_name": "miko", "name": "Nhóc Miko", "title": "Nhóc Miko", "img": "covers/miko.jpg", "bg": "backgrounds/miko.jpg", "tagline": "Cuộc sống đời thường vui tươi, đáng yêu của cô bé tiểu học Miko!", "accent": "#ff66cc" },
+            { "id_name": "jujutsu_kaisen", "name": "Chú Thuật Hồi Chiến", "title": "Chú Thuật Hồi Chiến - Jujutsu Kaisen", "img": "covers/jujutsu_kaisen.png", "bg": "backgrounds/jujutsu_kaisen.jpg", "tagline": "Cuộc chiến chống lại những nguyền hồn cứu rỗi thế gian!", "accent": "#9933ff" },
+            { "id_name": "black_jack", "name": "Black Jack", "title": "Black Jack", "img": "covers/black_jack.jpg", "bg": "backgrounds/black_jack.jpg", "tagline": "Quái y thiên tài với y thuật siêu việt cứu rỗi sinh mệnh!", "accent": "#333333" },
+            { "id_name": "chie", "name": "Chie - Cô Bé Hạt Tiêu", "title": "Chie - Cô Bé Hạt Tiêu", "img": "covers/chie.jpg", "bg": "backgrounds/chie.jpg", "tagline": "Cô bé hạt tiêu giàu nghị lực và cuộc sống gia đình siêu hài hước!", "accent": "#ff66cc" },
+            { "id_name": "chu_thoong", "name": "Chú Thoòng", "title": "Chú Thoòng", "img": "covers/chu_thoong.jpg", "bg": "backgrounds/chu_thoong.jpg", "tagline": "Châm biếm hài hước sâu cay qua những tình huống dở khóc dở cười!", "accent": "#ffd700" },
+            { "id_name": "dr_stone", "name": "Dr Stone", "title": "Dr Stone", "img": "covers/dr_stone.jpg", "bg": "backgrounds/dr_stone.jpg", "tagline": "Khôi phục nền văn minh nhân loại bằng sức mạnh khoa học vĩ đại!", "accent": "#00ffcc" },
+            { "id_name": "doi_quan_nhi_nho", "name": "Đội Quân Nhí Nhố", "title": "Đội Quân Nhí Nhố", "img": "covers/doi_quan_nhi_nho.jpg", "bg": "backgrounds/doi_quan_nhi_nho.jpg", "tagline": "Lớp học nghịch ngợm siêu quậy đầy ắp những pha hài hước té ghế!", "accent": "#ff99cc" }
+        ];
+
+        // Pagination and filter states
+        let itemsPerPage = 36;
+        let currentPage = 1;
+        let filteredManga = [...mangaData];
+        let currentSearchQuery = "";
+        let currentLetterFilter = "all";
+        let activeSlideIndex = 0;
+
+        // Elements
+        const mangaGrid = document.getElementById("mangaGrid");
+        const searchInput = document.getElementById("searchInput");
+        const statsBadge = document.getElementById("statsBadge");
+        const alphabetNav = document.getElementById("alphabetNav");
+        const carousel = document.getElementById("carousel");
+        const prevSlideBtn = document.getElementById("prevSlide");
+        const nextSlideBtn = document.getElementById("nextSlide");
+        const carouselDotsContainer = document.getElementById("carouselDots");
+        const backToTopBtn = document.getElementById("backToTop");
+        const paginationContainer = document.getElementById("pagination");
+        const paginationInfo = document.getElementById("paginationInfo");
+        const pageSizeSelect = document.getElementById("pageSizeSelect");
+        const shurikenContainer = document.getElementById("shuriken-container");
+
+        // Spawn falling shurikens (Ninja stars) - HIGHER VISIBILITY & METALLIC SHADOWS
+        function initShurikens() {
+            const numShurikens = 18; // Slightly more particles
+            // 8-pointed shuriken path SVG
+            const shurikenSVG = `
+                <svg viewBox="0 0 100 100" fill="currentColor" style="width: 100%; height: 100%; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.65));">
+                    <path d="M50 5 L55 35 L85 20 L65 45 L95 50 L65 55 L85 80 L55 65 L50 95 L45 65 L15 80 L35 55 L5 50 L35 45 L15 20 L45 35 Z M50 43 A 7 7 0 1 1 50 57 A 7 7 0 1 1 50 43 Z" />
+                </svg>
+            `;
+
+            for (let i = 0; i < numShurikens; i++) {
+                const particle = document.createElement("div");
+                particle.className = "shuriken-particle";
+                particle.innerHTML = shurikenSVG;
+
+                // Random styling for realistic natural fall
+                const size = Math.random() * 25 + 20; // 20px to 45px
+                const duration = Math.random() * 9 + 5; // 5s to 14s (slightly faster for dynamic feeling)
+                const delay = Math.random() * -15; // pre-start so they fall immediately on load
+                const left = Math.random() * 100; // 0% to 100% width
+
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${left}%`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+
+                // Higher opacity range (25% to 45% visible)
+                const opacity = Math.random() * 0.20 + 0.25;
+
+                // Color choices: Alternating between neon red and metallic silver-grey shurikens
+                if (Math.random() > 0.4) {
+                    particle.style.color = `rgba(255, 62, 62, ${opacity})`; // Neon Red shuriken
+                } else {
+                    particle.style.color = `rgba(180, 185, 210, ${opacity + 0.1})`; // Metallic Silver shuriken
+                }
+
+                shurikenContainer.appendChild(particle);
+            }
+        }
+
+        // Set up Carousel Banners
+        function initCarousel() {
+            slideshowData.forEach((item, idx) => {
+                // Create Slide
+                const slide = document.createElement("div");
+                slide.className = `slide ${idx === 0 ? 'active' : ''}`;
+                slide.style.backgroundImage = `url('${item.bg}')`;
+                slide.innerHTML = `
+                    <div class="slide-overlay"></div>
+                    <div class="slide-content-wrapper">
+                        <div class="slide-content">
+                            <span class="slide-badge">Hot Pick</span>
+                            <h2 class="slide-title">${item.title}</h2>
+                            <p class="slide-desc">${item.tagline}</p>
+                        </div>
+                        <div class="slide-cover-container">
+                            <img class="slide-cover-img" src="${item.img}" alt="${item.name}" onerror="this.onerror=null; this.src='covers/one_piece.png';">
+                        </div>
+                    </div>
+                `;
+                // Insert slide before buttons
+                carousel.insertBefore(slide, prevSlideBtn);
+
+                // Create Dot
+                const dot = document.createElement("div");
+                dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+                dot.addEventListener("click", () => showSlide(idx));
+                carouselDotsContainer.appendChild(dot);
+            });
+        }
+
+        function showSlide(index) {
+            const slides = document.querySelectorAll(".slide");
+            const dots = document.querySelectorAll(".dot");
+            if (slides.length === 0) return;
+
+            slides[activeSlideIndex].classList.remove("active");
+            dots[activeSlideIndex].classList.remove("active");
+
+            activeSlideIndex = (index + slides.length) % slides.length;
+
+            slides[activeSlideIndex].classList.add("active");
+            dots[activeSlideIndex].classList.add("active");
+        }
+
+        // Slide auto loop
+        let slideInterval = setInterval(() => showSlide(activeSlideIndex + 1), 6000);
+
+        prevSlideBtn.addEventListener("click", () => {
+            clearInterval(slideInterval);
+            showSlide(activeSlideIndex - 1);
+            slideInterval = setInterval(() => showSlide(activeSlideIndex + 1), 6000);
+        });
+
+        nextSlideBtn.addEventListener("click", () => {
+            clearInterval(slideInterval);
+            showSlide(activeSlideIndex + 1);
+            slideInterval = setInterval(() => showSlide(activeSlideIndex + 1), 6000);
+        });
+
+        // Generate Alphabet Nav
+        function initAlphabetNav() {
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+            alphabet.forEach(letter => {
+                const btn = document.createElement("button");
+                btn.className = "letter-btn";
+                btn.textContent = letter;
+                btn.setAttribute("data-letter", letter);
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".letter-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    currentLetterFilter = letter.toLowerCase();
+                    applyFiltersAndResetPage();
+                });
+                alphabetNav.appendChild(btn);
+            });
+
+            document.querySelector('.letter-btn[data-letter="all"]').addEventListener("click", (e) => {
+                document.querySelectorAll(".letter-btn").forEach(b => b.classList.remove("active"));
+                e.target.classList.add("active");
+                currentLetterFilter = "all";
+                applyFiltersAndResetPage();
+            });
+
+            document.querySelector('.letter-btn[data-letter="nostalgia"]').addEventListener("click", (e) => {
+                document.querySelectorAll(".letter-btn").forEach(b => b.classList.remove("active"));
+                e.target.classList.add("active");
+                currentLetterFilter = "nostalgia";
+                applyFiltersAndResetPage();
+            });
+        }
+
+        // Helper function to remove accents for fuzzy matching
+        function removeAccents(str) {
+            return str.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+                .replace(/đ/g, "d");
+        }
+
+        // Determine if a manga is one of the featured series, returns background decoration image link if matched
+        function getMangaCover(mangaName) {
+            const normalizedName = removeAccents(mangaName);
+            // Sort featuredData by length descending so that specific longer names match first!
+            const sortedFeatured = [...featuredData].sort((a,b) => b.name.length - a.name.length);
+            for (const item of sortedFeatured) {
+                const normFeatured = removeAccents(item.name);
+                if (normalizedName.includes(normFeatured)) {
+                    return item.img;
+                }
+            }
+            return "";
+        }
+
+                        function isNostalgic(mangaName) {
+            const name = removeAccents(mangaName);
+            if (name.includes("than dong dat viet")) return true;
+            if (name.includes("doremon") || name.includes("doraemon")) return true;
+            if (name.includes("conan")) return true;
+            if (name.includes("dragon ball")) return true;
+            if (name.includes("ty quay")) return true;
+            if (name.includes("o long vien")) return true;
+            if (name.startsWith("shin -") || name === "shin") return true;
+            if (name === "naruto" || name.startsWith("naruto ")) return true;
+            if (name.includes("miko")) return true;
+            if (name.includes("chu thuat hoi chien") || name.includes("jujutsu kaisen")) return true;
+            if (name.includes("inuyasha")) return true;
+            if (name.includes("one piece")) return true;
+            if (name.includes("chu thoong")) return true;
+            if (name.includes("cuon tu dien ky bi")) return true;
+            if (name.includes("ninja hattori")) return true;
+            if (name.includes("that hinh dai toi")) return true;
+            if (name.includes("bleach")) return true;
+            if (name.includes("cau be mat troi")) return true;
+            if (name.includes("chie - co be hat tieu")) return true;
+            if (name.includes("croket")) return true;
+            if (name.includes("hello komang")) return true;
+            if (name.includes("death note")) return true;
+            if (name.includes("dr stone")) return true;
+            if (name.includes("dr. slump")) return true;
+            if (name.includes("hunter x hunter")) return true;
+            if (name.includes("hoang phi hong")) return true;
+            if (name.includes("nu hoang ai cap")) return true;
+            if (name === "mar" || name.startsWith("mar ") || name.endsWith(" mar")) return true;
+            if (name.includes("blue lock")) return true;
+            if (name.includes("black jack")) return true;
+            if (name.includes("doi quan nhi nho")) return true;
+            return false;
+        }
+
+        function isFeatured(mangaName) {
+            const normalizedName = removeAccents(mangaName);
+            for (const item of featuredData) {
+                const normFeatured = removeAccents(item.name);
+                if (normalizedName.includes(normFeatured)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Apply filters (search & alphabet) and reset page to 1
+        function applyFiltersAndResetPage() {
+            filteredManga = mangaData;
+
+            // Apply Letter Filter
+            if (currentLetterFilter === "nostalgia") {
+                filteredManga = filteredManga.filter(item => isNostalgic(item.name));
+            } else if (currentLetterFilter !== "all") {
+                filteredManga = filteredManga.filter(item => {
+                    const cleanedName = removeAccents(item.name).trim();
+                    return cleanedName.startsWith(currentLetterFilter);
+                });
+            }
+
+            // Apply Search Query
+            if (currentSearchQuery.trim() !== "") {
+                const queryClean = removeAccents(currentSearchQuery);
+                filteredManga = filteredManga.filter(item => {
+                    const nameClean = removeAccents(item.name);
+                    const idClean = item.id.toLowerCase();
+                    return nameClean.includes(queryClean) || idClean.includes(queryClean);
+                });
+            }
+
+            currentPage = 1;
+            renderGridAndPagination();
+        }
+
+        // Main render function for Grid & Pagination (Upgraded to smart window pagination)
+        function renderGridAndPagination() {
+            mangaGrid.innerHTML = "";
+            paginationContainer.innerHTML = "";
+
+            statsBadge.textContent = `Đang hiển thị: ${filteredManga.length} / ${mangaData.length} bộ`;
+
+            if (filteredManga.length === 0) {
+                mangaGrid.innerHTML = `
+                    <div class="no-results">
+                        <div class="bubble-container">
+                            Trời ơi! Không tìm thấy bộ truyện nào khớp với từ khóa của bạn rồi! Thử từ khóa khác xem sao...
+                        </div>
+                        <img class="no-results-img" src="covers/crying_chopper.png" alt="Chopper khóc">
+                    </div>
+                `;
+                paginationInfo.textContent = "Không tìm thấy bộ truyện nào";
+                document.getElementById("paginationContainer").style.display = "none";
+                return;
+            }
+
+            document.getElementById("paginationContainer").style.display = "flex";
+
+            // Calculate pagination indexes
+            const totalPages = Math.ceil(filteredManga.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredManga.length);
+
+            // Update stats info text
+            paginationInfo.textContent = `Hiển thị từ ${startIndex + 1} đến ${endIndex} trong tổng số ${filteredManga.length} bộ truyện`;
+
+            const pageItems = filteredManga.slice(startIndex, endIndex);
+
+            // Render Grid
+            pageItems.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "manga-card";
+
+                const coverUrl = getMangaCover(item.name);
+                const featuredBadge = isFeatured(item.name) ? '<span class="featured-tag">HOT ★</span>' : '';
+
+                // Header HTML: if we have cover, render it as full cover image filling the box
+                const coverHTML = coverUrl
+                    ? `<img class="card-cover-full" src="${coverUrl}" alt="${item.name}" onerror="this.onerror=null; this.outerHTML='<div class=&quot;generic-cover&quot;>${item.name.charAt(0)}</div>';">`
+                    : `<div class="generic-cover">${item.name.charAt(0)}</div>`;
+
+                // Render card: compact style with cover image or letters filling 100% of header
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="id-badge">${item.id}</span>
+                        ${featuredBadge}
+                        ${coverHTML}
+                        <div class="card-title-box">
+                            <h3 class="manga-title" title="${item.name}">${item.name}</h3>
+                        </div>
+                    </div>
+                `;
+                mangaGrid.appendChild(card);
+            });
+
+            // Smart Pagination Button Window Generator
+            if (totalPages > 1) {
+                // First & Prev buttons
+                const prevBtn = document.createElement("button");
+                prevBtn.className = "page-btn";
+                prevBtn.textContent = "◀";
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.addEventListener("click", () => {
+                    currentPage--;
+                    window.scrollTo({ top: 400, behavior: "smooth" });
+                    renderGridAndPagination();
+                });
+                paginationContainer.appendChild(prevBtn);
+
+                // Page 1 (always display)
+                const firstPageBtn = document.createElement("button");
+                firstPageBtn.className = `page-btn ${currentPage === 1 ? 'active' : ''}`;
+                firstPageBtn.textContent = "1";
+                firstPageBtn.addEventListener("click", () => {
+                    currentPage = 1;
+                    window.scrollTo({ top: 400, behavior: "smooth" });
+                    renderGridAndPagination();
+                });
+                paginationContainer.appendChild(firstPageBtn);
+
+                // Left ellipsis
+                if (currentPage > 3) {
+                    const dots = document.createElement("span");
+                    dots.className = "page-ellipsis";
+                    dots.textContent = "...";
+                    paginationContainer.appendChild(dots);
+                }
+
+                // Core neighbors
+                let startPage = Math.max(2, currentPage - 1);
+                let endPage = Math.min(totalPages - 1, currentPage + 1);
+
+                // Adjust sliding boundaries
+                if (currentPage <= 2) {
+                    endPage = Math.min(totalPages - 1, 4);
+                }
+                if (currentPage >= totalPages - 1) {
+                    startPage = Math.max(2, totalPages - 3);
+                }
+
+                for (let p = startPage; p <= endPage; p++) {
+                    const pageBtn = document.createElement("button");
+                    pageBtn.className = `page-btn ${p === currentPage ? 'active' : ''}`;
+                    pageBtn.textContent = p;
+                    pageBtn.addEventListener("click", () => {
+                        currentPage = p;
+                        window.scrollTo({ top: 400, behavior: "smooth" });
+                        renderGridAndPagination();
+                    });
+                    paginationContainer.appendChild(pageBtn);
+                }
+
+                // Right ellipsis
+                if (currentPage < totalPages - 2) {
+                    const dots = document.createElement("span");
+                    dots.className = "page-ellipsis";
+                    dots.textContent = "...";
+                    paginationContainer.appendChild(dots);
+                }
+
+                // Last page (always display)
+                const lastPageBtn = document.createElement("button");
+                lastPageBtn.className = `page-btn ${currentPage === totalPages ? 'active' : ''}`;
+                lastPageBtn.textContent = totalPages;
+                lastPageBtn.addEventListener("click", () => {
+                    currentPage = totalPages;
+                    window.scrollTo({ top: 400, behavior: "smooth" });
+                    renderGridAndPagination();
+                });
+                paginationContainer.appendChild(lastPageBtn);
+
+                // Next & Last buttons
+                const nextBtn = document.createElement("button");
+                nextBtn.className = "page-btn";
+                nextBtn.textContent = "▶";
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.addEventListener("click", () => {
+                    currentPage++;
+                    window.scrollTo({ top: 400, behavior: "smooth" });
+                    renderGridAndPagination();
+                });
+                paginationContainer.appendChild(nextBtn);
+            }
+        }
+
+        // Listen for changes in items-per-page select box
+        pageSizeSelect.addEventListener("change", (e) => {
+            itemsPerPage = parseInt(e.target.value);
+            currentPage = 1;
+            renderGridAndPagination();
+        });
+
+        // Event Listeners
+        searchInput.addEventListener("input", (e) => {
+            currentSearchQuery = e.target.value;
+            applyFiltersAndResetPage();
+        });
+
+        // Focus search bar on '/' key
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "/" && document.activeElement !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+                searchInput.select();
+            }
+        });
+
+        // Scroll back to top logic
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 400) {
+                backToTopBtn.classList.add("visible");
+            } else {
+                backToTopBtn.classList.remove("visible");
+            }
+        });
+
+        backToTopBtn.addEventListener("click", () => {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        });
+
+        // Run on start
+        initShurikens();
+        initCarousel();
+        initAlphabetNav();
+        renderGridAndPagination();
+    </script>
+</body>
+
+</html>

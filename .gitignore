@@ -1,0 +1,5 @@
+.DS_Store
+.tempmediaStorage/
+.system_generated/
+*.log
+scratch/
