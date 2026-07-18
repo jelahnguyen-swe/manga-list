@@ -255,7 +255,9 @@
             width: 100%;
             height: 100%;
             opacity: 0;
-            transition: opacity 0.8s ease-in-out;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
             background-size: cover;
             background-position: center;
             display: flex;
@@ -278,6 +280,8 @@
 
         .slide.active {
             opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
             z-index: 2;
         }
 
@@ -875,30 +879,59 @@
 
         /* Responsive Design adjustments */
         @media (max-width: 768px) {
+            header {
+                padding: 45px 15px 75px 15px; /* Added substantial bottom padding to prevent POW overlap */
+            }
+
             h1 {
                 font-size: 2.8rem;
+                letter-spacing: 2px;
+            }
+
+            .subtitle {
+                font-size: 0.95rem;
+                letter-spacing: 2px;
+                margin-top: 5px;
+            }
+
+            .manga-decoration {
+                font-size: 0.85rem;
+                padding: 4px 10px;
+                border-width: 2px;
+                box-shadow: 2px 2px 0 #000;
+            }
+
+            .deco-boom {
+                top: 10px;
+                left: 10px;
+            }
+
+            .deco-pow {
+                bottom: 12px;
+                right: 12px;
             }
 
             .carousel {
-                height: 320px;
+                height: 280px;
             }
 
             .slide {
-                padding: 20px 30px;
+                padding: 20px 45px;
             }
 
             .slide-title {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
                 text-shadow: 2px 2px 0 #000;
             }
 
             .slide-cover-container {
-                width: 100px;
-                height: 150px;
+                width: 70px;
+                height: 105px;
+                border-width: 2px;
             }
 
             .slide-desc {
-                font-size: 0.95rem;
+                font-size: 0.85rem;
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
@@ -910,17 +943,103 @@
             }
 
             .carousel-btn {
-                width: 35px;
-                height: 35px;
-                font-size: 1rem;
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
             }
 
             .carousel-prev {
-                left: 10px;
+                left: 5px;
             }
 
             .carousel-next {
-                right: 10px;
+                right: 5px;
+            }
+
+            .carousel-dots {
+                bottom: 12px;
+                left: 50%;
+                transform: translateX(-50%);
+                justify-content: center;
+                flex-wrap: wrap;
+                width: calc(100% - 100px);
+                gap: 8px;
+            }
+
+            .dot {
+                width: 10px;
+                height: 10px;
+                margin: 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .carousel {
+                height: 350px; /* Increased height to comfortably fit vertical stacked slide content */
+            }
+
+            .slide {
+                padding: 15px 35px 35px 35px; /* Added more bottom padding for dot indicators */
+            }
+
+            .slide-content-wrapper {
+                flex-direction: column-reverse; /* Stacks cover image on top, text details below it */
+                justify-content: center;
+                gap: 12px;
+                height: 100%;
+            }
+
+            .slide-cover-container {
+                display: block;
+                width: 90px;
+                height: 130px;
+                border-width: 2px;
+                margin: 0 auto 15px auto; /* Added bottom margin to space out from text */
+                transform: rotate(3deg);
+            }
+
+            .slide.active .slide-cover-container {
+                transform: rotate(4deg) scale(1.03);
+            }
+
+            .slide-content {
+                text-align: center;
+                max-width: 100%;
+                padding: 0;
+            }
+
+            .slide-badge {
+                padding: 3px 8px;
+                font-size: 0.7rem;
+                margin-bottom: 6px;
+                box-shadow: 2px 2px 0 #000;
+            }
+
+            .slide-title {
+                font-size: 1.35rem;
+                margin-bottom: 6px;
+            }
+
+            .slide-desc {
+                font-size: 0.85rem;
+                line-height: 1.4;
+                padding: 0;
+            }
+
+            .carousel-dots {
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                justify-content: center;
+                flex-wrap: wrap;
+                width: calc(100% - 80px);
+                gap: 6px;
+            }
+
+            .dot {
+                width: 8px;
+                height: 8px;
+                margin: 0;
             }
         }
 
@@ -1266,7 +1385,7 @@
                 // Create Slide
                 const slide = document.createElement("div");
                 slide.className = `slide ${idx === 0 ? 'active' : ''}`;
-                slide.style.backgroundImage = `url('${item.bg}')`;
+                slide.style.backgroundImage = `url('${item.bg}?v=1.2')`;
                 slide.innerHTML = `
                     <div class="slide-overlay"></div>
                     <div class="slide-content-wrapper">
@@ -1276,7 +1395,7 @@
                             <p class="slide-desc">${item.tagline}</p>
                         </div>
                         <div class="slide-cover-container">
-                            <img class="slide-cover-img" src="${item.img}" alt="${item.name}" onerror="this.onerror=null; this.src='covers/one_piece.png';">
+                            <img class="slide-cover-img" src="${item.img}?v=1.2" alt="${item.name}" onerror="this.onerror=null; this.src='covers/one_piece.png';">
                         </div>
                     </div>
                 `;
