@@ -978,6 +978,79 @@
             border-color: #ff3e3e;
             box-shadow: none;
         }
+
+        /* News Section Styles */
+        .news-section {
+            max-width: 1200px;
+            margin: 0 auto 20px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+        .news-container {
+            display: flex;
+            align-items: center;
+            background: rgba(26, 26, 26, 0.75);
+            backdrop-filter: blur(10px);
+            border: 2px solid #00ff66;
+            border-radius: 8px;
+            padding: 8px 15px;
+            box-shadow: 4px 4px 0 #00ff66;
+            gap: 15px;
+            overflow: hidden;
+        }
+        .news-tag {
+            background: #00ff66;
+            color: #000;
+            font-weight: 900;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            letter-spacing: 1px;
+            box-shadow: 2px 2px 0 #000;
+            border: 1px solid #000;
+            animation: pulse-border 2s infinite;
+        }
+        .news-content {
+            flex-grow: 1;
+            font-size: 0.9rem;
+            color: #eee;
+            font-weight: 600;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 24px;
+        }
+        .news-marquee {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 40s linear infinite;
+        }
+        .news-item {
+            display: inline-block;
+            margin-right: 50px;
+            position: relative;
+        }
+        .news-item::after {
+            content: "✦";
+            color: #00ff66;
+            margin-left: 25px;
+        }
+        .news-item:last-child::after {
+            content: "";
+        }
+        @keyframes marquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 2px 2px 0 #000; }
+            50% { box-shadow: 4px 4px 0 #000; }
+            100% { box-shadow: 2px 2px 0 #000; }
+        }
     </style>
 </head>
 
@@ -1008,6 +1081,14 @@
             <button class="carousel-btn carousel-prev" id="prevSlide">&lt;</button>
             <button class="carousel-btn carousel-next" id="nextSlide">&gt;</button>
             <div class="carousel-dots" id="carouselDots"></div>
+        </div>
+    </section>
+
+    <!-- News Section (Shown only if news.txt contains content) -->
+    <section class="news-section" id="newsSection" style="display: none;">
+        <div class="news-container">
+            <span class="news-tag">BẢN TIN MỚI</span>
+            <div class="news-content" id="newsContent"></div>
         </div>
     </section>
 
@@ -1364,6 +1445,7 @@
 
             currentPage = 1;
             renderGridAndPagination();
+        loadNews();
         }
 
         // Main render function for Grid & Pagination (Upgraded to smart window pagination)
@@ -1437,6 +1519,7 @@
                     currentPage--;
                     window.scrollTo({ top: 400, behavior: "smooth" });
                     renderGridAndPagination();
+        loadNews();
                 });
                 paginationContainer.appendChild(prevBtn);
 
@@ -1448,6 +1531,7 @@
                     currentPage = 1;
                     window.scrollTo({ top: 400, behavior: "smooth" });
                     renderGridAndPagination();
+        loadNews();
                 });
                 paginationContainer.appendChild(firstPageBtn);
 
@@ -1479,6 +1563,7 @@
                         currentPage = p;
                         window.scrollTo({ top: 400, behavior: "smooth" });
                         renderGridAndPagination();
+        loadNews();
                     });
                     paginationContainer.appendChild(pageBtn);
                 }
@@ -1499,6 +1584,7 @@
                     currentPage = totalPages;
                     window.scrollTo({ top: 400, behavior: "smooth" });
                     renderGridAndPagination();
+        loadNews();
                 });
                 paginationContainer.appendChild(lastPageBtn);
 
@@ -1511,6 +1597,7 @@
                     currentPage++;
                     window.scrollTo({ top: 400, behavior: "smooth" });
                     renderGridAndPagination();
+        loadNews();
                 });
                 paginationContainer.appendChild(nextBtn);
             }
@@ -1521,6 +1608,7 @@
             itemsPerPage = parseInt(e.target.value);
             currentPage = 1;
             renderGridAndPagination();
+        loadNews();
         });
 
         // Event Listeners
@@ -1554,11 +1642,44 @@
             });
         });
 
+
+        async function loadNews() {
+            try {
+                const response = await fetch('news.txt');
+                if (!response.ok) return;
+                const text = await response.text();
+                const lines = text.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0);
+                
+                if (lines.length > 0) {
+                    const newsSection = document.getElementById('newsSection');
+                    const newsContent = document.getElementById('newsContent');
+                    
+                    const marquee = document.createElement('div');
+                    marquee.className = 'news-marquee';
+                    
+                    lines.forEach(line => {
+                        const item = document.createElement('span');
+                        item.className = 'news-item';
+                        item.textContent = line;
+                        marquee.appendChild(item);
+                    });
+                    
+                    newsContent.appendChild(marquee);
+                    newsSection.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Failed to load news.txt", err);
+            }
+        }
+
         // Run on start
         initShurikens();
         initCarousel();
         initAlphabetNav();
         renderGridAndPagination();
+        loadNews();
     </script>
 </body>
 
