@@ -1170,6 +1170,73 @@
             50% { box-shadow: 4px 4px 0 #000; }
             100% { box-shadow: 2px 2px 0 #000; }
         }
+
+        /* PDF Sample Button Styles */
+        .pdf-btn-container {
+            margin: 20px auto 5px auto;
+            display: inline-block;
+            position: relative;
+            z-index: 5;
+        }
+        @keyframes pdf-bounce {
+            0%, 100% {
+                transform: skew(-6deg) rotate(-1deg) translateY(0);
+            }
+            50% {
+                transform: skew(-6deg) rotate(-1deg) translateY(-6px);
+            }
+        }
+        .pdf-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #f5b041, #ff3e3e);
+            color: #ffffff;
+            text-decoration: none;
+            font-family: 'Bangers', cursive;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            font-weight: 800;
+            border: 3px solid #000000;
+            border-radius: 8px;
+            box-shadow: 5px 5px 0px #000000;
+            transform: skew(-6deg) rotate(-1deg);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            text-shadow: 2px 2px 0px #000000;
+            animation: pdf-bounce 2s infinite ease-in-out;
+        }
+        .pdf-btn:hover {
+            transform: skew(-6deg) rotate(1deg) scale(1.06);
+            box-shadow: 8px 8px 0px #000000, 0 0 20px rgba(255, 62, 62, 0.6);
+            background: linear-gradient(135deg, #ff3e3e, #f5b041);
+            color: #ffffff;
+            animation: none;
+        }
+        .pdf-btn-icon {
+            font-size: 1.6rem;
+            transform: rotate(-10deg);
+            transition: transform 0.3s ease;
+        }
+        .pdf-btn:hover .pdf-btn-icon {
+            transform: scale(1.2) rotate(15deg);
+        }
+        .pdf-btn-text {
+            text-box: trim-both cap alphabetic;
+        }
+        @media (max-width: 768px) {
+            .pdf-btn {
+                padding: 10px 20px;
+                font-size: 1.15rem;
+                border-width: 2px;
+                box-shadow: 3px 3px 0px #000000;
+            }
+            .pdf-btn-icon {
+                font-size: 1.3rem;
+            }
+        }
     </style>
 </head>
 
@@ -1190,6 +1257,12 @@
             <h1>MANGA VAULT</h1>
         </div>
         <div class="subtitle">Chứa đựng cả tuổi thơ</div>
+        <div class="pdf-btn-container">
+            <a href="https://drive.google.com/drive/u/4/folders/1wy4VFyb4eHQQ69vWC0mABopqiZ0mIF-p" target="_blank" class="pdf-btn" rel="noopener noreferrer">
+                <span class="pdf-btn-icon">📖</span>
+                <span class="pdf-btn-text">Click để xem file truyện mẫu</span>
+            </a>
+        </div>
         <span class="manga-decoration deco-pow">POW!</span>
     </header>
 
